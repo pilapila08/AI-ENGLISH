@@ -1,0 +1,70 @@
+scenarios:
+  - id: interview
+    name: English Job Interview
+    description: Practice answering common job interview questions in English with a professional interviewer.
+    user_role: Candidate applying for an international position
+    ai_role: Professional English-speaking interviewer
+    difficulty: intermediate
+    goals:
+      - Introduce your background clearly
+      - Explain work experience with concrete examples
+      - Answer behavioral questions using structured responses
+      - Ask appropriate follow-up questions
+    opening_message: "Hello, thanks for joining the interview today. Could you start by telling me a little about yourself?"
+    correction_mode: gentle
+
+  - id: restaurant
+    name: Restaurant Ordering
+    description: Practice ordering food, asking about menu items, and handling common restaurant conversations.
+    user_role: Customer ordering food in an English-speaking restaurant
+    ai_role: Friendly restaurant server
+    difficulty: beginner
+    goals:
+      - Order food and drinks politely
+      - Ask about recommendations and ingredients
+      - Handle simple service problems
+      - Practice natural small talk
+    opening_message: "Good evening! Welcome to our restaurant. Are you ready to order, or would you like a few recommendations?"
+    correction_mode: gentle
+
+  - id: meeting
+    name: Business Meeting
+    description: Practice expressing opinions, asking questions, and summarizing decisions in a workplace meeting.
+    user_role: Team member joining a project discussion
+    ai_role: Meeting host facilitating the discussion
+    difficulty: advanced
+    goals:
+      - Share opinions clearly and diplomatically
+      - Ask clarifying questions
+      - Agree or disagree professionally
+      - Summarize action items
+    opening_message: "Thanks for joining the meeting. Let's start with your update on the project progress this week."
+    correction_mode: strict
+
+  - id: airport
+    name: Airport Travel
+    description: Practice check-in, security, boarding, and asking for help during airport travel.
+    user_role: Traveler at an international airport
+    ai_role: Airport staff member helping passengers
+    difficulty: beginner
+    goals:
+      - Ask for directions inside the airport
+      - Check in and confirm flight information
+      - Explain travel issues clearly
+      - Understand common airport instructions
+    opening_message: "Hello! How can I help you with your flight today?"
+    correction_mode: immersive
+
+  - id: self_introduction
+    name: Self Introduction
+    description: Practice a concise and natural English self-introduction for study, work, or networking situations.
+    user_role: Learner introducing themselves in English
+    ai_role: Supportive English speaking coach
+    difficulty: beginner
+    goals:
+      - State your name and background naturally
+      - Describe interests and goals
+      - Use confident and fluent transitions
+      - Improve clarity and pronunciation awareness
+    opening_message: "Let's practice your self-introduction. Please introduce yourself as if we just met at an international event."
+    correction_mode: gentle
