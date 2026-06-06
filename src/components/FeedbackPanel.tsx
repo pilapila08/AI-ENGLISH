@@ -14,11 +14,19 @@ const scoreLabels: Array<{ key: keyof ScoreResult; label: string }> = [
   { key: "naturalnessScore", label: "自然度" },
 ];
 
+const severityStyles: Record<CorrectionItem["severity"], string> = {
+  high: "bg-red-100 text-red-700",
+  medium: "bg-amber-100 text-amber-700",
+  low: "bg-sky-100 text-sky-700",
+};
+
 function FeedbackPanel({
   correctionMode,
   corrections,
   score,
 }: FeedbackPanelProps) {
+  const visibleCorrections = corrections.slice(-5).reverse();
+
   return (
     <aside className="flex min-h-0 flex-col rounded-3xl bg-white p-5 shadow-panel">
       <div className="flex items-start justify-between">
@@ -61,23 +69,55 @@ function FeedbackPanel({
 
       <section className="mt-5 min-h-0 flex-1">
         <h3 className="text-sm font-semibold">纠错建议</h3>
-        <div className="mt-3 space-y-3">
-          {corrections.length === 0 ? (
+        <div className="mt-3 max-h-[390px] space-y-3 overflow-y-auto pr-1">
+          {correctionMode === "immersive" ? (
+            <div className="rounded-2xl border border-violet-100 bg-violet-50 p-5 text-center">
+              <p className="text-sm font-semibold text-brand">当前为沉浸模式</p>
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+                对话过程中不会打断你，用户表达将在课后统一分析。
+              </p>
+            </div>
+          ) : visibleCorrections.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-5 text-center">
-              <p className="text-sm font-medium text-slate-600">等待练习内容</p>
+              <p className="text-sm font-medium text-slate-600">暂未发现需要纠正的问题</p>
               <p className="mt-1 text-xs leading-5 text-slate-400">
-                后续纠错建议与推荐表达会显示在这里。
+                提交英文文本后，建议会显示在这里。
               </p>
             </div>
           ) : (
-            corrections.map((item) => (
-              <div className="rounded-2xl bg-amber-50 p-4" key={item.id}>
-                <p className="text-xs font-semibold text-amber-700">{item.errorType}</p>
-                <p className="mt-2 text-sm text-slate-500 line-through">
+            visibleCorrections.map((item) => (
+              <article
+                className="rounded-2xl border border-amber-100 bg-amber-50 p-4"
+                key={item.id}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-semibold text-amber-800">
+                    {item.errorType}
+                  </p>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${severityStyles[item.severity]}`}
+                  >
+                    {item.severity}
+                  </span>
+                </div>
+                <p className="mt-3 text-xs font-semibold text-slate-400">原句</p>
+                <p className="mt-1 text-sm text-slate-500 line-through">
                   {item.original}
                 </p>
-                <p className="mt-1 text-sm font-medium text-slate-700">{item.corrected}</p>
-              </div>
+                <p className="mt-3 text-xs font-semibold text-slate-400">修改</p>
+                <p className="mt-1 text-sm font-medium text-slate-800">
+                  {item.corrected}
+                </p>
+                <p className="mt-3 text-xs leading-5 text-slate-600">
+                  {item.explanation}
+                </p>
+                <div className="mt-3 rounded-xl bg-white/80 p-3">
+                  <p className="text-[11px] font-semibold text-brand">更自然表达</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-700">
+                    {item.betterExpression}
+                  </p>
+                </div>
+              </article>
             ))
           )}
         </div>

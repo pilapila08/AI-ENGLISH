@@ -1,12 +1,14 @@
 import { ipcMain } from "electron";
 import type { CorrectionMode } from "../types";
 import { DialogueService } from "../services/dialogueService";
+import { CorrectionService } from "../services/correctionService";
 import { getScenarios } from "../services/scenarioService";
 import { SessionService } from "../services/sessionService";
 import { IPC_CHANNELS } from "./channels";
 
 const sessionService = new SessionService();
 const dialogueService = new DialogueService();
+const correctionService = new CorrectionService();
 
 export function registerSessionIpc(): void {
   ipcMain.handle(
@@ -45,15 +47,36 @@ export function registerSessionIpc(): void {
     }
 
     const sessionWithUserMessage = sessionService.addUserMessage(trimmedText);
-    const assistantReply = await dialogueService.reply(
-      scenario,
-      sessionWithUserMessage.messages,
-      trimmedText,
-    );
+    const correctionPromise = Promise.resolve().then(() =>
+      correctionService.analyze(
+        trimmedText,
+        scenario,
+        currentSession.correctionMode,
+      ),
+    ).catch((error) => {
+      console.warn(
+        "[SessionIPC] Correction analysis failed; continuing the dialogue.",
+        error,
+      );
+      return [];
+    });
+    const [assistantReply, corrections] = await Promise.all([
+      dialogueService.reply(
+        scenario,
+        sessionWithUserMessage.messages,
+        trimmedText,
+      ),
+      correctionPromise,
+    ]);
 
     if (assistantReply.fallbackUsed) {
       sessionService.markOfflineFallback();
     }
+
+    if (corrections.length > 0) {
+      sessionService.addCorrections(corrections);
+    }
+
     return sessionService.addAssistantMessage(assistantReply.content);
   });
 

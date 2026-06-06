@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type {
   ChatMessage,
+  CorrectionItem,
   CorrectionMode,
   PracticeSession,
 } from "../types";
@@ -36,6 +37,15 @@ export class SessionService {
 
   addAssistantMessage(content: string): PracticeSession {
     return this.addMessage("assistant", content);
+  }
+
+  addCorrections(corrections: CorrectionItem[]): PracticeSession {
+    if (!this.currentSession || this.currentSession.status !== "active") {
+      throw new Error("There is no active practice session.");
+    }
+
+    this.currentSession.corrections.push(...corrections);
+    return this.cloneSession(this.currentSession);
   }
 
   markOfflineFallback(): PracticeSession {

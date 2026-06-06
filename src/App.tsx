@@ -254,8 +254,8 @@ function App() {
             speechWarning={speechWarning}
           />
           <FeedbackPanel
-            correctionMode={correctionMode}
-            corrections={[]}
+            correctionMode={session?.correctionMode ?? correctionMode}
+            corrections={session?.corrections ?? []}
             score={placeholderScore}
           />
         </section>
