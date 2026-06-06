@@ -45,6 +45,7 @@ function App() {
     isTranscribing,
     transcript,
     error: transcriptionError,
+    warning: transcriptionWarning,
     transcribe,
     clearTranscript,
   } = useTranscription();
@@ -214,6 +215,7 @@ function App() {
           text={inputText}
           transcript={transcript}
           transcriptionError={transcriptionError}
+          transcriptionWarning={transcriptionWarning}
         />
         {sessionError && (
           <p className="rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">

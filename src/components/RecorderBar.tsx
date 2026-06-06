@@ -9,6 +9,7 @@ interface RecorderBarProps {
   isTranscribing: boolean;
   transcript: string;
   transcriptionError: string;
+  transcriptionWarning: string;
   onTextChange: (value: string) => void;
   onAction: (action: string) => void;
   onStartRecording: () => void;
@@ -27,6 +28,7 @@ function RecorderBar({
   isTranscribing,
   transcript,
   transcriptionError,
+  transcriptionWarning,
   onTextChange,
   onAction,
   onStartRecording,
@@ -106,7 +108,8 @@ function RecorderBar({
         audioUrl ||
         recordingError ||
         transcript ||
-        transcriptionError) && (
+        transcriptionError ||
+        transcriptionWarning) && (
         <div className="mt-3 flex flex-col gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-3">
           {recording && (
             <div className="flex items-center gap-2 text-sm font-medium text-red-600">
@@ -138,6 +141,9 @@ function RecorderBar({
           )}
           {transcriptionError && (
             <p className="text-sm text-red-600">{transcriptionError}</p>
+          )}
+          {transcriptionWarning && (
+            <p className="text-sm text-amber-700">{transcriptionWarning}</p>
           )}
         </div>
       )}

@@ -1,8 +1,8 @@
 import { ipcMain } from "electron";
-import { MockASRProvider } from "../providers/mockASRProvider";
+import { ASRService } from "../services/asrService";
 import { IPC_CHANNELS } from "./channels";
 
-const asrProvider = new MockASRProvider();
+const asrService = new ASRService();
 const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
 
 export function registerSpeechIpc(): void {
@@ -24,7 +24,7 @@ export function registerSpeechIpc(): void {
           throw new Error("Audio data exceeds the 25 MB limit.");
         }
 
-        return await asrProvider.transcribe(audioBuffer, meta);
+        return await asrService.transcribe(audioBuffer, meta);
       } catch (error) {
         console.error("[SpeechIPC] Failed to transcribe audio:", error);
         throw new Error(
