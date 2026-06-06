@@ -4,4 +4,5 @@ export const IPC_CHANNELS = {
   practiceSendMessage: "practice:send-message",
   practiceEnd: "practice:end",
   practiceGetCurrent: "practice:get-current",
+  speechTranscribe: "speech:transcribe",
 } as const;

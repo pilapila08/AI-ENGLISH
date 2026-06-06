@@ -8,4 +8,8 @@ contextBridge.exposeInMainWorld("speakCoachAPI", {
     ipcRenderer.invoke("practice:send-message", text),
   endPractice: () => ipcRenderer.invoke("practice:end"),
   getCurrentSession: () => ipcRenderer.invoke("practice:get-current"),
+  transcribeAudio: (
+    arrayBuffer: ArrayBuffer,
+    meta?: { mimeType?: string; scenarioId?: string },
+  ) => ipcRenderer.invoke("speech:transcribe", arrayBuffer, meta),
 });

@@ -5,6 +5,7 @@ import RecorderBar from "./components/RecorderBar";
 import ScenarioPanel from "./components/ScenarioPanel";
 import { usePracticeSession } from "./hooks/usePracticeSession";
 import { useRecorder } from "./hooks/useRecorder";
+import { useTranscription } from "./hooks/useTranscription";
 import type { CorrectionMode, Scenario, ScoreResult } from "./types";
 
 const placeholderScore: ScoreResult = {
@@ -40,6 +41,13 @@ function App() {
     startRecording,
     stopRecording,
   } = useRecorder();
+  const {
+    isTranscribing,
+    transcript,
+    error: transcriptionError,
+    transcribe,
+    clearTranscript,
+  } = useTranscription();
 
   useEffect(() => {
     let isActive = true;
@@ -83,6 +91,7 @@ function App() {
 
   const handleAction = async (action: string) => {
     if (action === "start-practice") {
+      clearTranscript();
       await startPractice(selectedScenarioId, correctionMode);
       return;
     }
@@ -105,6 +114,25 @@ function App() {
     }
 
     console.log(`[SpeakCoach] ${action}`);
+  };
+
+  const handleTranscribe = async () => {
+    if (!audioBlob) {
+      return;
+    }
+
+    const result = await transcribe(audioBlob, {
+      scenarioId: selectedScenarioId,
+    });
+
+    if (result) {
+      setInputText(result);
+    }
+  };
+
+  const handleStartRecording = async () => {
+    clearTranscript();
+    await startRecording();
   };
 
   if (isLoadingScenarios || !selectedScenario) {
@@ -175,13 +203,17 @@ function App() {
           audioUrl={audioUrl}
           isActive={isSessionActive}
           isBusy={isBusy}
-          onStartRecording={() => void startRecording()}
+          isTranscribing={isTranscribing}
+          onStartRecording={() => void handleStartRecording()}
           onStopRecording={stopRecording}
+          onTranscribe={() => void handleTranscribe()}
           onAction={(action) => void handleAction(action)}
           onTextChange={setInputText}
           recording={recording}
           recordingError={recordingError}
           text={inputText}
+          transcript={transcript}
+          transcriptionError={transcriptionError}
         />
         {sessionError && (
           <p className="rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">

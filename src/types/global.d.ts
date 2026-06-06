@@ -15,6 +15,10 @@ declare global {
       sendMessage: (text: string) => Promise<PracticeSession>;
       endPractice: () => Promise<PracticeSession | null>;
       getCurrentSession: () => Promise<PracticeSession | null>;
+      transcribeAudio: (
+        arrayBuffer: ArrayBuffer,
+        meta?: { mimeType?: string; scenarioId?: string },
+      ) => Promise<string>;
     };
   }
 }
