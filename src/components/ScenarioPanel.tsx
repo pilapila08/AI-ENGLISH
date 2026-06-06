@@ -4,6 +4,7 @@ interface ScenarioPanelProps {
   scenarios: Scenario[];
   selectedScenarioId: string;
   correctionMode: CorrectionMode;
+  disabled?: boolean;
   onScenarioChange: (scenarioId: string) => void;
   onCorrectionModeChange: (mode: CorrectionMode) => void;
 }
@@ -22,6 +23,7 @@ function ScenarioPanel({
   scenarios,
   selectedScenarioId,
   correctionMode,
+  disabled = false,
   onScenarioChange,
   onCorrectionModeChange,
 }: ScenarioPanelProps) {
@@ -40,11 +42,12 @@ function ScenarioPanel({
 
           return (
             <button
-              className={`w-full rounded-2xl border px-4 py-3 text-left transition ${
+              className={`w-full rounded-2xl border px-4 py-3 text-left transition disabled:cursor-not-allowed disabled:opacity-70 ${
                 isSelected
                   ? "border-brand bg-brand text-white shadow-lg shadow-violet-200"
                   : "border-transparent bg-slate-50 text-slate-600 hover:border-violet-100 hover:bg-violet-50"
               }`}
+              disabled={disabled}
               key={scenario.id}
               onClick={() => onScenarioChange(scenario.id)}
               type="button"
@@ -67,7 +70,9 @@ function ScenarioPanel({
         <div className="mt-3 space-y-2">
           {correctionModes.map((mode) => (
             <label
-              className={`block cursor-pointer rounded-2xl border p-3 transition ${
+              className={`block rounded-2xl border p-3 transition ${
+                disabled ? "cursor-not-allowed opacity-70" : "cursor-pointer"
+              } ${
                 correctionMode === mode.id
                   ? "border-violet-200 bg-violet-50"
                   : "border-slate-100 hover:border-slate-200"
@@ -78,6 +83,7 @@ function ScenarioPanel({
                 <input
                   checked={correctionMode === mode.id}
                   className="mt-1 accent-violet-600"
+                  disabled={disabled}
                   name="correction-mode"
                   onChange={() => onCorrectionModeChange(mode.id)}
                   type="radio"

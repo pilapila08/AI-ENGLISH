@@ -1,14 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import ChatPanel from "./components/ChatPanel";
 import FeedbackPanel from "./components/FeedbackPanel";
 import RecorderBar from "./components/RecorderBar";
 import ScenarioPanel from "./components/ScenarioPanel";
-import type {
-  ChatMessage,
-  CorrectionMode,
-  Scenario,
-  ScoreResult,
-} from "./types";
+import { usePracticeSession } from "./hooks/usePracticeSession";
+import type { CorrectionMode, Scenario, ScoreResult } from "./types";
 
 const placeholderScore: ScoreResult = {
   pronunciationScore: 82,
@@ -27,74 +23,76 @@ function App() {
   const [correctionMode, setCorrectionMode] =
     useState<CorrectionMode>("gentle");
   const [inputText, setInputText] = useState("");
+  const {
+    session,
+    isBusy,
+    error: sessionError,
+    startPractice,
+    sendMessage,
+    endPractice,
+  } = usePracticeSession();
 
   useEffect(() => {
     let isActive = true;
 
-    async function loadScenarios() {
-      try {
-        const loadedScenarios = await window.speakCoachAPI.getScenarios();
-
-        if (!isActive) {
+    window.speakCoachAPI
+      .getScenarios()
+      .then((loadedScenarios) => {
+        if (!isActive || loadedScenarios.length === 0) {
           return;
         }
 
-        if (loadedScenarios.length === 0) {
-          throw new Error("没有可用的练习场景。");
-        }
-
         setScenarios(loadedScenarios);
-        setSelectedScenarioId(loadedScenarios[0].id);
-      } catch (error) {
+        setSelectedScenarioId(
+          session?.scenarioId ?? loadedScenarios[0].id,
+        );
+      })
+      .catch((error) => {
         console.error("[Renderer] Failed to load scenarios:", error);
 
         if (isActive) {
           setScenarioError("场景加载失败，请重启客户端后重试。");
         }
-      } finally {
+      })
+      .finally(() => {
         if (isActive) {
           setIsLoadingScenarios(false);
         }
-      }
-    }
-
-    void loadScenarios();
+      });
 
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [session?.scenarioId]);
 
   const selectedScenario = scenarios.find(
     (scenario) => scenario.id === selectedScenarioId,
   );
+  const isSessionActive = session?.status === "active";
+  const messages =
+    session?.scenarioId === selectedScenarioId ? session.messages : [];
 
-  const messages = useMemo<ChatMessage[]>(() => {
-    if (!selectedScenario) {
-      return [];
+  const handleAction = async (action: string) => {
+    if (action === "start-practice") {
+      await startPractice(selectedScenarioId, correctionMode);
+      return;
     }
 
-    return [
-      {
-        id: `${selectedScenario.id}-opening`,
-        role: "assistant",
-        content: selectedScenario.openingMessage,
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: `${selectedScenario.id}-sample-user`,
-        role: "user",
-        content:
-          selectedScenario.id === "interview"
-            ? "Hello, I am a backend developer with three years of experience."
-            : selectedScenario.sampleQuestions[0],
-        createdAt: new Date().toISOString(),
-      },
-    ];
-  }, [selectedScenario]);
+    if (action === "submit-text") {
+      const didSend = await sendMessage(inputText);
 
-  const handleAction = (action: string) => {
-    console.log(`[SpeakCoach] ${action}`, { inputText, selectedScenarioId });
+      if (didSend) {
+        setInputText("");
+      }
+      return;
+    }
+
+    if (action === "end-practice") {
+      await endPractice();
+      return;
+    }
+
+    console.log(`[SpeakCoach] ${action}`);
   };
 
   if (isLoadingScenarios || !selectedScenario) {
@@ -124,8 +122,14 @@ function App() {
             SpeakCoach AI Desktop
           </h1>
         </div>
-        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
-          场景配置已加载
+        <span
+          className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
+            isSessionActive
+              ? "border-violet-200 bg-violet-50 text-brand"
+              : "border-emerald-200 bg-emerald-50 text-emerald-700"
+          }`}
+        >
+          {isSessionActive ? "练习进行中" : "场景配置已加载"}
         </span>
       </header>
 
@@ -133,12 +137,17 @@ function App() {
         <section className="grid min-h-[680px] gap-5 xl:grid-cols-[280px_minmax(460px,1fr)_310px]">
           <ScenarioPanel
             correctionMode={correctionMode}
+            disabled={isSessionActive}
             onCorrectionModeChange={setCorrectionMode}
             onScenarioChange={setSelectedScenarioId}
             scenarios={scenarios}
             selectedScenarioId={selectedScenarioId}
           />
-          <ChatPanel messages={messages} scenario={selectedScenario} />
+          <ChatPanel
+            isBusy={isBusy}
+            messages={messages}
+            scenario={selectedScenario}
+          />
           <FeedbackPanel
             correctionMode={correctionMode}
             corrections={[]}
@@ -146,10 +155,17 @@ function App() {
           />
         </section>
         <RecorderBar
-          onAction={handleAction}
+          isActive={isSessionActive}
+          isBusy={isBusy}
+          onAction={(action) => void handleAction(action)}
           onTextChange={setInputText}
           text={inputText}
         />
+        {sessionError && (
+          <p className="rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
+            {sessionError}
+          </p>
+        )}
       </div>
     </main>
   );

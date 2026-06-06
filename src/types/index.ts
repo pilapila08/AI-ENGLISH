@@ -63,11 +63,11 @@ export interface PracticeSession {
   id: string;
   scenarioId: string;
   correctionMode: CorrectionMode;
-  status: "idle" | "active" | "completed";
+  status: "active" | "completed";
   messages: ChatMessage[];
   corrections: CorrectionItem[];
   score?: ScoreResult;
   report?: PracticeReport;
-  startedAt?: string;
+  startedAt: string;
   endedAt?: string;
 }
