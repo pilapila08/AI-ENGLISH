@@ -4,6 +4,7 @@ import type {
   CorrectionItem,
   CorrectionMode,
   PracticeSession,
+  ScoreResult,
 } from "../types";
 import type { Scenario } from "./scenarioService";
 
@@ -31,8 +32,8 @@ export class SessionService {
     return this.cloneSession(session);
   }
 
-  addUserMessage(content: string): PracticeSession {
-    return this.addMessage("user", content);
+  addUserMessage(content: string, transcript?: string): PracticeSession {
+    return this.addMessage("user", content, transcript);
   }
 
   addAssistantMessage(content: string): PracticeSession {
@@ -45,6 +46,15 @@ export class SessionService {
     }
 
     this.currentSession.corrections.push(...corrections);
+    return this.cloneSession(this.currentSession);
+  }
+
+  updateScore(score: ScoreResult): PracticeSession {
+    if (!this.currentSession) {
+      throw new Error("There is no current practice session.");
+    }
+
+    this.currentSession.score = { ...score };
     return this.cloneSession(this.currentSession);
   }
 
@@ -71,24 +81,30 @@ export class SessionService {
     return this.cloneSession(this.currentSession);
   }
 
-  private addMessage(role: ChatMessage["role"], content: string): PracticeSession {
+  private addMessage(
+    role: ChatMessage["role"],
+    content: string,
+    transcript?: string,
+  ): PracticeSession {
     if (!this.currentSession || this.currentSession.status !== "active") {
       throw new Error("There is no active practice session.");
     }
 
-    this.currentSession.messages.push(this.createMessage(role, content));
+    this.currentSession.messages.push(this.createMessage(role, content, transcript));
     return this.cloneSession(this.currentSession);
   }
 
   private createMessage(
     role: ChatMessage["role"],
     content: string,
+    transcript?: string,
   ): ChatMessage {
     return {
       id: randomUUID(),
       role,
       content,
       createdAt: new Date().toISOString(),
+      transcript,
     };
   }
 
@@ -97,6 +113,7 @@ export class SessionService {
       ...session,
       messages: session.messages.map((message) => ({ ...message })),
       corrections: session.corrections.map((correction) => ({ ...correction })),
+      score: session.score ? { ...session.score } : undefined,
     };
   }
 }

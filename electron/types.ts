@@ -5,6 +5,7 @@ export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   createdAt: string;
+  transcript?: string;
 }
 
 export interface CorrectionItem {
@@ -17,6 +18,15 @@ export interface CorrectionItem {
   severity: "low" | "medium" | "high";
 }
 
+export interface ScoreResult {
+  pronunciationScore: number;
+  grammarScore: number;
+  fluencyScore: number;
+  vocabularyScore: number;
+  naturalnessScore: number;
+  overallScore: number;
+}
+
 export interface PracticeSession {
   id: string;
   scenarioId: string;
@@ -25,6 +35,7 @@ export interface PracticeSession {
   messages: ChatMessage[];
   corrections: CorrectionItem[];
   offlineFallback: boolean;
+  score?: ScoreResult;
   startedAt: string;
   endedAt?: string;
 }

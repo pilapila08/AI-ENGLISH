@@ -9,7 +9,7 @@ interface UsePracticeSessionResult {
     scenarioId: string,
     correctionMode: CorrectionMode,
   ) => Promise<void>;
-  sendMessage: (text: string) => Promise<boolean>;
+  sendMessage: (text: string, asrSucceeded?: boolean) => Promise<boolean>;
   endPractice: () => Promise<void>;
 }
 
@@ -69,9 +69,9 @@ export function usePracticeSession(): UsePracticeSessionResult {
   );
 
   const sendMessage = useCallback(
-    async (text: string) => {
+    async (text: string, asrSucceeded = false) => {
       const nextSession = await runAction(() =>
-        window.speakCoachAPI.sendMessage(text),
+        window.speakCoachAPI.sendMessage(text, { asrSucceeded }),
       );
       return Boolean(nextSession);
     },

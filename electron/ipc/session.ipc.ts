@@ -4,11 +4,13 @@ import { DialogueService } from "../services/dialogueService";
 import { CorrectionService } from "../services/correctionService";
 import { getScenarios } from "../services/scenarioService";
 import { SessionService } from "../services/sessionService";
+import { ScoringService } from "../services/scoringService";
 import { IPC_CHANNELS } from "./channels";
 
 const sessionService = new SessionService();
 const dialogueService = new DialogueService();
 const correctionService = new CorrectionService();
+const scoringService = new ScoringService();
 
 export function registerSessionIpc(): void {
   ipcMain.handle(
@@ -25,7 +27,11 @@ export function registerSessionIpc(): void {
     },
   );
 
-  ipcMain.handle(IPC_CHANNELS.practiceSendMessage, async (_event, text: string) => {
+  ipcMain.handle(IPC_CHANNELS.practiceSendMessage, async (
+    _event,
+    text: string,
+    meta?: { asrSucceeded?: boolean },
+  ) => {
     const trimmedText = text.trim();
     const currentSession = sessionService.getCurrentSession();
 
@@ -46,7 +52,10 @@ export function registerSessionIpc(): void {
       throw new Error(`Scenario not found: ${currentSession.scenarioId}`);
     }
 
-    const sessionWithUserMessage = sessionService.addUserMessage(trimmedText);
+    const sessionWithUserMessage = sessionService.addUserMessage(
+      trimmedText,
+      meta?.asrSucceeded ? trimmedText : undefined,
+    );
     const correctionPromise = Promise.resolve().then(() =>
       correctionService.analyze(
         trimmedText,
@@ -77,10 +86,24 @@ export function registerSessionIpc(): void {
       sessionService.addCorrections(corrections);
     }
 
-    return sessionService.addAssistantMessage(assistantReply.content);
+    const sessionWithReply = sessionService.addAssistantMessage(assistantReply.content);
+    sessionService.updateScore(
+      scoringService.calculate(sessionWithReply, sessionWithReply.corrections),
+    );
+    return sessionService.getCurrentSession();
   });
 
-  ipcMain.handle(IPC_CHANNELS.practiceEnd, () => sessionService.endSession());
+  ipcMain.handle(IPC_CHANNELS.practiceEnd, () => {
+    const currentSession = sessionService.getCurrentSession();
+
+    if (currentSession) {
+      sessionService.updateScore(
+        scoringService.calculate(currentSession, currentSession.corrections),
+      );
+    }
+
+    return sessionService.endSession();
+  });
   ipcMain.handle(IPC_CHANNELS.practiceGetCurrent, () =>
     sessionService.getCurrentSession(),
   );

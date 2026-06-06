@@ -12,7 +12,10 @@ declare global {
         scenarioId: string,
         correctionMode: CorrectionMode,
       ) => Promise<PracticeSession>;
-      sendMessage: (text: string) => Promise<PracticeSession>;
+      sendMessage: (
+        text: string,
+        meta?: { asrSucceeded?: boolean },
+      ) => Promise<PracticeSession>;
       endPractice: () => Promise<PracticeSession | null>;
       getCurrentSession: () => Promise<PracticeSession | null>;
       transcribeAudio: (

@@ -47,7 +47,7 @@ function FeedbackPanel({
             <p className="text-xs text-slate-400">当前综合评分</p>
             <p className="mt-1 text-4xl font-bold">{score.overallScore}</p>
           </div>
-          <span className="text-xs text-slate-400">Demo 占位</span>
+          <span className="text-xs text-slate-400">实时估算</span>
         </div>
         <div className="mt-5 space-y-3">
           {scoreLabels.map(({ key, label }) => (
@@ -66,6 +66,10 @@ function FeedbackPanel({
           ))}
         </div>
       </section>
+
+      <p className="mt-2 text-[11px] leading-4 text-slate-400">
+        当前发音分为基于 ASR 文本完整度的清晰度估算，并非声学级发音测评。
+      </p>
 
       <section className="mt-5 min-h-0 flex-1">
         <h3 className="text-sm font-semibold">纠错建议</h3>

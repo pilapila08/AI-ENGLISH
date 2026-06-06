@@ -9,13 +9,13 @@ import { useTranscription } from "./hooks/useTranscription";
 import { useSpeech } from "./hooks/useSpeech";
 import type { CorrectionMode, Scenario, ScoreResult } from "./types";
 
-const placeholderScore: ScoreResult = {
-  pronunciationScore: 82,
-  grammarScore: 78,
-  fluencyScore: 74,
-  vocabularyScore: 80,
-  naturalnessScore: 76,
-  overallScore: 78,
+const initialScore: ScoreResult = {
+  pronunciationScore: 60,
+  grammarScore: 90,
+  fluencyScore: 55,
+  vocabularyScore: 55,
+  naturalnessScore: 90,
+  overallScore: 71,
 };
 
 function App() {
@@ -148,10 +148,11 @@ function App() {
     }
 
     if (action === "submit-text") {
-      const didSend = await sendMessage(inputText);
+      const didSend = await sendMessage(inputText, Boolean(transcript));
 
       if (didSend) {
         setInputText("");
+        clearTranscript();
       }
       return;
     }
@@ -256,7 +257,7 @@ function App() {
           <FeedbackPanel
             correctionMode={session?.correctionMode ?? correctionMode}
             corrections={session?.corrections ?? []}
-            score={placeholderScore}
+            score={session?.score ?? initialScore}
           />
         </section>
         <RecorderBar
