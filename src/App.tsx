@@ -1,6 +1,4 @@
-import { useMemo, useState } from "react";
-import { parse } from "yaml";
-import scenariosYaml from "../config/scenarios.yaml?raw";
+import { useEffect, useMemo, useState } from "react";
 import ChatPanel from "./components/ChatPanel";
 import FeedbackPanel from "./components/FeedbackPanel";
 import RecorderBar from "./components/RecorderBar";
@@ -12,8 +10,6 @@ import type {
   ScoreResult,
 } from "./types";
 
-const scenarios = parse(scenariosYaml) as Scenario[];
-
 const placeholderScore: ScoreResult = {
   pronunciationScore: 82,
   grammarScore: 78,
@@ -24,17 +20,61 @@ const placeholderScore: ScoreResult = {
 };
 
 function App() {
-  const [selectedScenarioId, setSelectedScenarioId] = useState(scenarios[0].id);
+  const [scenarios, setScenarios] = useState<Scenario[]>([]);
+  const [selectedScenarioId, setSelectedScenarioId] = useState("");
+  const [scenarioError, setScenarioError] = useState("");
+  const [isLoadingScenarios, setIsLoadingScenarios] = useState(true);
   const [correctionMode, setCorrectionMode] =
     useState<CorrectionMode>("gentle");
   const [inputText, setInputText] = useState("");
 
-  const selectedScenario =
-    scenarios.find((scenario) => scenario.id === selectedScenarioId) ??
-    scenarios[0];
+  useEffect(() => {
+    let isActive = true;
 
-  const messages = useMemo<ChatMessage[]>(
-    () => [
+    async function loadScenarios() {
+      try {
+        const loadedScenarios = await window.speakCoachAPI.getScenarios();
+
+        if (!isActive) {
+          return;
+        }
+
+        if (loadedScenarios.length === 0) {
+          throw new Error("没有可用的练习场景。");
+        }
+
+        setScenarios(loadedScenarios);
+        setSelectedScenarioId(loadedScenarios[0].id);
+      } catch (error) {
+        console.error("[Renderer] Failed to load scenarios:", error);
+
+        if (isActive) {
+          setScenarioError("场景加载失败，请重启客户端后重试。");
+        }
+      } finally {
+        if (isActive) {
+          setIsLoadingScenarios(false);
+        }
+      }
+    }
+
+    void loadScenarios();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  const selectedScenario = scenarios.find(
+    (scenario) => scenario.id === selectedScenarioId,
+  );
+
+  const messages = useMemo<ChatMessage[]>(() => {
+    if (!selectedScenario) {
+      return [];
+    }
+
+    return [
       {
         id: `${selectedScenario.id}-opening`,
         role: "assistant",
@@ -50,13 +90,28 @@ function App() {
             : selectedScenario.sampleQuestions[0],
         createdAt: new Date().toISOString(),
       },
-    ],
-    [selectedScenario],
-  );
+    ];
+  }, [selectedScenario]);
 
   const handleAction = (action: string) => {
     console.log(`[SpeakCoach] ${action}`, { inputText, selectedScenarioId });
   };
+
+  if (isLoadingScenarios || !selectedScenario) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-mist p-6 text-ink">
+        <section className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-panel">
+          <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-violet-100 font-bold text-brand">
+            SC
+          </div>
+          <h1 className="mt-5 text-xl font-bold">SpeakCoach AI Desktop</h1>
+          <p className="mt-2 text-sm text-slate-500">
+            {scenarioError || "正在通过安全 IPC 加载练习场景..."}
+          </p>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-mist p-5 text-ink">
@@ -70,7 +125,7 @@ function App() {
           </h1>
         </div>
         <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
-          基础界面已就绪
+          场景配置已加载
         </span>
       </header>
 

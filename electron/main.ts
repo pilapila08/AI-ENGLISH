@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from "electron";
 import path from "node:path";
+import { registerScenarioIpc } from "./ipc/scenario.ipc";
 
 const isDevelopment = Boolean(process.env.VITE_DEV_SERVER_URL);
 
@@ -29,6 +30,7 @@ function createMainWindow(): void {
 }
 
 app.whenReady().then(() => {
+  registerScenarioIpc();
   createMainWindow();
 
   app.on("activate", () => {
