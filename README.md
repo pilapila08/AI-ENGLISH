@@ -39,6 +39,30 @@ Set `USE_MOCK_LLM=true`, or leave `OPENAI_API_KEY` empty, to run entirely with
 the offline MockLLMProvider. If a configured remote provider fails, the current
 practice session automatically falls back to the mock provider.
 
+## LLM Correction and Scoring
+
+Correction and six-dimensional scoring can use an OpenAI Chat Completions
+compatible model. Empty `ANALYSIS_*` values reuse the `OPENAI_*` configuration:
+
+```env
+USE_LLM_ANALYSIS=true
+ANALYSIS_API_KEY=
+ANALYSIS_BASE_URL=
+ANALYSIS_MODEL=
+```
+
+The LLM analyzes grammar, expression, naturalness, and contextual
+appropriateness using the scenario and recent conversation. Scoring includes
+pronunciation clarity estimate, grammar, fluency, vocabulary, naturalness, and
+context appropriateness. If analysis fails, stable heuristic correction and
+scoring are used automatically.
+
+The overall score uses fixed local weights even when dimensions are generated
+by an LLM: pronunciation 15%, grammar 20%, fluency 15%, vocabulary 15%,
+naturalness 15%, and context appropriateness 20%. Context appropriateness
+measures whether the learner answers the preceding prompt, stays in role, and
+advances the selected scenario goals.
+
 ## ASR Configuration
 
 The default ASR provider is the stable offline mock. Supported values are

@@ -8,6 +8,8 @@ import { OpenAICompatibleProvider } from "./openAICompatibleProvider";
 import { WhisperAPIProvider } from "./whisperAPIProvider";
 import type { TTSProvider } from "./ttsProvider";
 import { XiaomiMimoTTSProvider } from "./xiaomiMimoTTSProvider";
+import type { AnalysisProvider } from "./analysisProvider";
+import { OpenAICompatibleAnalysisProvider } from "./openAICompatibleAnalysisProvider";
 
 export type LLMMode = "mock" | "remote" | "fallback";
 export type ASRMode = "mock" | "whisper" | "mimo";
@@ -26,6 +28,11 @@ export interface ASRProviderSelection {
 export interface TTSProviderSelection {
   provider: TTSProvider | null;
   mode: TTSMode;
+}
+
+export interface AnalysisProviderSelection {
+  provider: AnalysisProvider | null;
+  mode: "remote" | "heuristic";
 }
 
 export function createLLMProvider(): ProviderSelection {
@@ -143,5 +150,36 @@ export function createTTSProvider(): TTSProviderSelection {
       voice: process.env.MIMO_TTS_VOICE?.trim() || "Chloe",
     }),
     mode: "mimo",
+  };
+}
+
+export function createAnalysisProvider(): AnalysisProviderSelection {
+  if (process.env.USE_LLM_ANALYSIS?.trim().toLowerCase() === "false") {
+    console.info("[ProviderFactory] LLM analysis disabled; using heuristics.");
+    return { provider: null, mode: "heuristic" };
+  }
+
+  const apiKey =
+    process.env.ANALYSIS_API_KEY?.trim() || process.env.OPENAI_API_KEY?.trim();
+
+  if (!apiKey) {
+    console.info("[ProviderFactory] No analysis API key; using heuristics.");
+    return { provider: null, mode: "heuristic" };
+  }
+
+  console.info("[ProviderFactory] Using OpenAI-compatible LLM analysis.");
+  return {
+    provider: new OpenAICompatibleAnalysisProvider({
+      apiKey,
+      baseUrl:
+        process.env.ANALYSIS_BASE_URL?.trim() ||
+        process.env.OPENAI_BASE_URL?.trim() ||
+        "https://api.openai.com/v1",
+      model:
+        process.env.ANALYSIS_MODEL?.trim() ||
+        process.env.OPENAI_MODEL?.trim() ||
+        "gpt-4o-mini",
+    }),
+    mode: "remote",
   };
 }

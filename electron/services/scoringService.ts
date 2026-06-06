@@ -1,31 +1,21 @@
+import type { AnalysisProvider } from "../providers/analysisProvider";
+import { createAnalysisProvider } from "../providers/providerFactory";
 import type {
   CorrectionItem,
   PracticeSession,
   ScoreResult,
 } from "../types";
+import { parseAnalysisJson } from "./analysisJson";
+import type { Scenario } from "./scenarioService";
+
+type ScoreDimensions = Omit<ScoreResult, "overallScore">;
 
 const scenarioKeywords: Record<string, string[]> = {
-  interview: [
-    "experience",
-    "project",
-    "team",
-    "backend",
-    "development",
-    "challenge",
-    "role",
-  ],
+  interview: ["experience", "project", "team", "backend", "challenge", "role"],
   restaurant: ["order", "menu", "dish", "drink", "recommend", "bill", "please"],
   meeting: ["project", "progress", "risk", "timeline", "agree", "team", "next"],
-  airport: ["passport", "flight", "gate", "boarding", "bag", "check", "booking"],
-  self_introduction: [
-    "name",
-    "from",
-    "work",
-    "study",
-    "enjoy",
-    "interest",
-    "goal",
-  ],
+  airport: ["passport", "flight", "gate", "boarding", "bag", "booking"],
+  self_introduction: ["name", "from", "work", "study", "enjoy", "interest", "goal"],
 };
 
 const severityPenalty: Record<CorrectionItem["severity"], number> = {
@@ -43,7 +33,33 @@ function getWords(text: string): string[] {
 }
 
 export class ScoringService {
-  calculate(
+  private readonly analysisProvider: AnalysisProvider | null;
+
+  constructor(provider?: AnalysisProvider | null) {
+    this.analysisProvider =
+      provider === undefined ? createAnalysisProvider().provider : provider;
+  }
+
+  async score(
+    session: PracticeSession,
+    scenario: Scenario,
+    corrections: CorrectionItem[] = session.corrections,
+  ): Promise<ScoreResult> {
+    if (this.analysisProvider) {
+      try {
+        return await this.scoreWithLLM(session, scenario, corrections);
+      } catch (error) {
+        console.warn(
+          "[ScoringService] LLM scoring failed; using heuristic scoring.",
+          error,
+        );
+      }
+    }
+
+    return this.calculateHeuristic(session, corrections);
+  }
+
+  calculateHeuristic(
     session: PracticeSession,
     corrections: CorrectionItem[] = session.corrections,
   ): ScoreResult {
@@ -58,45 +74,112 @@ export class ScoringService {
     const averageAnswerLength =
       answers.length === 0 ? 0 : allWords.length / answers.length;
     const completeAnswers = answers.filter(
-      (answer) =>
-        answer.words.length >= 6 || /[.!?]$/.test(answer.content),
+      (answer) => answer.words.length >= 6 || /[.!?]$/.test(answer.content),
     ).length;
     const asrAnswerCount = userMessages.filter((message) =>
       Boolean(message.transcript?.trim()),
     ).length;
+    const dimensions: ScoreDimensions = {
+      pronunciationScore: this.scorePronunciation(
+        answers.length,
+        asrAnswerCount,
+        averageAnswerLength,
+        completeAnswers,
+      ),
+      grammarScore: this.scoreGrammar(corrections),
+      fluencyScore: this.scoreFluency(
+        answers.length,
+        averageAnswerLength,
+        completeAnswers,
+      ),
+      vocabularyScore: this.scoreVocabulary(session.scenarioId, allWords),
+      naturalnessScore: this.scoreNaturalness(corrections),
+      contextAppropriatenessScore: this.scoreContextAppropriateness(
+        session,
+        corrections,
+      ),
+    };
 
-    const pronunciationScore = this.scorePronunciation(
-      answers.length,
-      asrAnswerCount,
-      averageAnswerLength,
-      completeAnswers,
-    );
-    const grammarScore = this.scoreGrammar(corrections);
-    const fluencyScore = this.scoreFluency(
-      answers.length,
-      averageAnswerLength,
-      completeAnswers,
-    );
-    const vocabularyScore = this.scoreVocabulary(
-      session.scenarioId,
-      allWords,
-    );
-    const naturalnessScore = this.scoreNaturalness(corrections);
-    const overallScore = clamp(
-      pronunciationScore * 0.2 +
-        grammarScore * 0.25 +
-        fluencyScore * 0.2 +
-        vocabularyScore * 0.15 +
-        naturalnessScore * 0.2,
-    );
+    return this.withOverall(dimensions);
+  }
 
+  private async scoreWithLLM(
+    session: PracticeSession,
+    scenario: Scenario,
+    corrections: CorrectionItem[],
+  ): Promise<ScoreResult> {
+    const dialogue = session.messages
+      .map((message) => `${message.role}: ${message.content}`)
+      .join("\n");
+    const correctionSummary = corrections
+      .map(
+        (item) =>
+          `${item.severity} ${item.errorType}: ${item.original} -> ${item.corrected}`,
+      )
+      .join("\n");
+    const response = await this.analysisProvider!.analyze([
+      {
+        role: "system",
+        content: [
+          "You are an English speaking assessment engine.",
+          "Score each dimension from 0 to 100 using the scenario, complete conversation, and correction evidence.",
+          "Be consistent and conservative. Context appropriateness measures whether learner responses answer the preceding prompt, fit their role, and advance the scenario goals.",
+          "Pronunciation is only a clarity estimate from ASR transcript availability and completeness; do not claim acoustic analysis.",
+          "Return JSON only:",
+          '{"pronunciationScore":0,"grammarScore":0,"fluencyScore":0,"vocabularyScore":0,"naturalnessScore":0,"contextAppropriatenessScore":0}',
+        ].join("\n"),
+      },
+      {
+        role: "user",
+        content: [
+          `Scenario: ${scenario.name}`,
+          `Description: ${scenario.description}`,
+          `Learner role: ${scenario.userRole}`,
+          `AI role: ${scenario.aiRole}`,
+          `Goals: ${scenario.goals.join("; ")}`,
+          `ASR user messages: ${session.messages.filter((message) => message.role === "user" && message.transcript).length}`,
+          `Conversation:\n${dialogue || "(empty)"}`,
+          `Corrections:\n${correctionSummary || "(none)"}`,
+        ].join("\n"),
+      },
+    ]);
+    const parsed = parseAnalysisJson<Partial<ScoreDimensions>>(response);
+    const requiredKeys: Array<keyof ScoreDimensions> = [
+      "pronunciationScore",
+      "grammarScore",
+      "fluencyScore",
+      "vocabularyScore",
+      "naturalnessScore",
+      "contextAppropriatenessScore",
+    ];
+
+    for (const key of requiredKeys) {
+      if (typeof parsed[key] !== "number") {
+        throw new Error(`LLM scoring response is missing ${key}.`);
+      }
+    }
+
+    return this.withOverall({
+      pronunciationScore: clamp(parsed.pronunciationScore!),
+      grammarScore: clamp(parsed.grammarScore!),
+      fluencyScore: clamp(parsed.fluencyScore!),
+      vocabularyScore: clamp(parsed.vocabularyScore!),
+      naturalnessScore: clamp(parsed.naturalnessScore!),
+      contextAppropriatenessScore: clamp(parsed.contextAppropriatenessScore!),
+    });
+  }
+
+  private withOverall(scores: ScoreDimensions): ScoreResult {
     return {
-      pronunciationScore,
-      grammarScore,
-      fluencyScore,
-      vocabularyScore,
-      naturalnessScore,
-      overallScore,
+      ...scores,
+      overallScore: clamp(
+        scores.pronunciationScore * 0.15 +
+          scores.grammarScore * 0.2 +
+          scores.fluencyScore * 0.15 +
+          scores.vocabularyScore * 0.15 +
+          scores.naturalnessScore * 0.15 +
+          scores.contextAppropriatenessScore * 0.2,
+      ),
     };
   }
 
@@ -106,25 +189,16 @@ export class ScoringService {
     averageLength: number,
     completeAnswers: number,
   ): number {
-    if (answerCount === 0) {
-      return 60;
-    }
-
-    // This is a clarity estimate based on usable ASR text, not acoustic scoring.
+    if (answerCount === 0) return 60;
     const completenessBonus = (completeAnswers / answerCount) * 10;
-    const shortAnswerPenalty = averageLength < 4 ? 12 : averageLength < 7 ? 5 : 0;
-    const baseScore = asrAnswerCount > 0 ? 75 : 68;
-    return clamp(baseScore + completenessBonus - shortAnswerPenalty, 50);
+    const shortPenalty = averageLength < 4 ? 12 : averageLength < 7 ? 5 : 0;
+    return clamp((asrAnswerCount > 0 ? 75 : 68) + completenessBonus - shortPenalty, 50);
   }
 
   private scoreGrammar(corrections: CorrectionItem[]): number {
-    const grammarErrors = corrections.filter((correction) =>
-      correction.errorType.toLowerCase().includes("grammar"),
-    );
-    const deduction = grammarErrors.reduce(
-      (total, correction) => total + severityPenalty[correction.severity],
-      0,
-    );
+    const deduction = corrections
+      .filter((item) => item.errorType.toLowerCase().includes("grammar"))
+      .reduce((total, item) => total + severityPenalty[item.severity], 0);
     return clamp(90 - deduction, 50);
   }
 
@@ -133,36 +207,45 @@ export class ScoringService {
     averageLength: number,
     completeAnswers: number,
   ): number {
-    if (answerCount === 0) {
-      return 55;
-    }
-
-    const lengthScore = Math.min(25, averageLength * 1.8);
-    const continuityBonus = Math.min(10, Math.max(0, answerCount - 1) * 2);
-    const completenessBonus = (completeAnswers / answerCount) * 10;
-    return clamp(50 + lengthScore + continuityBonus + completenessBonus);
+    if (answerCount === 0) return 55;
+    return clamp(
+      50 +
+        Math.min(25, averageLength * 1.8) +
+        Math.min(10, Math.max(0, answerCount - 1) * 2) +
+        (completeAnswers / answerCount) * 10,
+    );
   }
 
   private scoreVocabulary(scenarioId: string, words: string[]): number {
-    if (words.length === 0) {
-      return 55;
-    }
-
+    if (words.length === 0) return 55;
     const uniqueWords = new Set(words);
-    const diversity = uniqueWords.size / words.length;
-    const keywords = scenarioKeywords[scenarioId] ?? [];
-    const keywordHits = keywords.filter((keyword) => uniqueWords.has(keyword)).length;
-    return clamp(55 + diversity * 25 + Math.min(15, keywordHits * 3));
+    const keywordHits = (scenarioKeywords[scenarioId] ?? []).filter((keyword) =>
+      uniqueWords.has(keyword),
+    ).length;
+    return clamp(55 + (uniqueWords.size / words.length) * 25 + Math.min(15, keywordHits * 3));
   }
 
   private scoreNaturalness(corrections: CorrectionItem[]): number {
     const deduction = corrections.reduce(
-      (total, correction) =>
-        total +
-        severityPenalty[correction.severity] +
-        (correction.betterExpression.trim() ? 1 : 0),
+      (total, item) => total + severityPenalty[item.severity] + 1,
       0,
     );
     return clamp(90 - deduction, 45);
+  }
+
+  private scoreContextAppropriateness(
+    session: PracticeSession,
+    corrections: CorrectionItem[],
+  ): number {
+    const userTurns = session.messages.filter((message) => message.role === "user").length;
+    if (userTurns === 0) return 60;
+    const contextIssues = corrections.filter((item) =>
+      item.errorType.toLowerCase().includes("context"),
+    );
+    const deduction = contextIssues.reduce(
+      (total, item) => total + severityPenalty[item.severity],
+      0,
+    );
+    return clamp(85 + Math.min(8, userTurns * 2) - deduction, 45);
   }
 }

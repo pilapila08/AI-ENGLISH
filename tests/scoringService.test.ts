@@ -37,17 +37,17 @@ function createGrammarCorrection(index: number): CorrectionItem {
 }
 
 test("empty session does not crash", () => {
-  const score = new ScoringService().calculate(createSession());
+  const score = new ScoringService(null).calculateHeuristic(createSession());
 
   assert.equal(typeof score.overallScore, "number");
   assert.equal(score.pronunciationScore, 60);
 });
 
 test("more grammar errors produce a lower grammar score", () => {
-  const service = new ScoringService();
+  const service = new ScoringService(null);
   const session = createSession(["I have three years of backend experience."]);
-  const oneError = service.calculate(session, [createGrammarCorrection(1)]);
-  const threeErrors = service.calculate(session, [
+  const oneError = service.calculateHeuristic(session, [createGrammarCorrection(1)]);
+  const threeErrors = service.calculateHeuristic(session, [
     createGrammarCorrection(1),
     createGrammarCorrection(2),
     createGrammarCorrection(3),
@@ -58,11 +58,13 @@ test("more grammar errors produce a lower grammar score", () => {
 });
 
 test("overall score stays within 0 to 100", () => {
-  const score = new ScoringService().calculate(
+  const score = new ScoringService(null).calculateHeuristic(
     createSession(["Yes.", "I have three years of backend experience."]),
     Array.from({ length: 20 }, (_, index) => createGrammarCorrection(index)),
   );
 
   assert.ok(score.overallScore >= 0);
   assert.ok(score.overallScore <= 100);
+  assert.ok(score.contextAppropriatenessScore >= 0);
+  assert.ok(score.contextAppropriatenessScore <= 100);
 });

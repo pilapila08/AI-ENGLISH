@@ -1,66 +1,65 @@
 import { randomUUID } from "node:crypto";
 import type {
+  ChatMessage,
   CorrectionItem,
   CorrectionMode,
 } from "../types";
+import type { AnalysisProvider } from "../providers/analysisProvider";
+import { createAnalysisProvider } from "../providers/providerFactory";
+import { parseAnalysisJson } from "./analysisJson";
 import type { Scenario } from "./scenarioService";
 
-interface CorrectionRule {
-  errorType: string;
-  severity: CorrectionItem["severity"];
-  matches: (input: string) => boolean;
-  correct: (input: string) => string;
-  explanation: string;
-  betterExpression: (corrected: string, scenario: Scenario) => string;
+interface LLMCorrectionResponse {
+  corrections?: Array<Partial<Omit<CorrectionItem, "id">>>;
 }
 
-const rules: CorrectionRule[] = [
-  {
-    errorType: "Grammar · plural noun",
-    severity: "high",
-    matches: (input) => /\b(I have|with)\s+(\w+\s+)?(?:one|two|three|four|five|\d+)\s+year\b/i.test(input),
-    correct: (input) =>
-      input.replace(
-        /\b((?:I have|with)\s+(?:\w+\s+)?(?:one|two|three|four|five|\d+)\s+)year\b/i,
-        "$1years",
-      ),
-    explanation: "Use the plural noun “years” after a number greater than one.",
-    betterExpression: (_corrected, scenario) =>
-      scenario.id === "interview"
-        ? "I have three years of experience in backend development."
-        : "I have three years of relevant experience.",
-  },
-  {
-    errorType: "Grammar · verb form",
-    severity: "high",
-    matches: (input) => /\bI am agree\b/i.test(input),
-    correct: (input) => input.replace(/\bI am agree\b/gi, "I agree"),
-    explanation: "“Agree” is a verb, so it does not need “am”.",
-    betterExpression: () => "I agree with that approach.",
-  },
-  {
-    errorType: "Grammar · question form",
-    severity: "medium",
-    matches: (input) => /\bHow to say\b/i.test(input),
-    correct: (input) => input.replace(/\bHow to say\b/gi, "How do you say"),
-    explanation: "Use an auxiliary verb when asking a complete question.",
-    betterExpression: () => "How do you say this more naturally in English?",
-  },
-  {
-    errorType: "Expression · ordering",
-    severity: "medium",
-    matches: (input) => /\bI want order\b/i.test(input),
-    correct: (input) => input.replace(/\bI want order\b/gi, "I want to order"),
-    explanation: "Use “to” before the verb after “want”.",
-    betterExpression: (_corrected, scenario) =>
-      scenario.id === "restaurant"
-        ? "I’d like to order the grilled chicken, please."
-        : "I’d like to place an order.",
-  },
-];
-
 export class CorrectionService {
-  analyze(
+  private readonly analysisProvider: AnalysisProvider | null;
+
+  constructor(provider?: AnalysisProvider | null) {
+    this.analysisProvider =
+      provider === undefined ? createAnalysisProvider().provider : provider;
+  }
+
+  async analyze(
+    original: string,
+    scenario: Scenario,
+    mode: CorrectionMode,
+    history: ChatMessage[] = [],
+  ): Promise<CorrectionItem[]> {
+    if (mode === "immersive") {
+      return [];
+    }
+
+    if (this.analysisProvider) {
+      try {
+        const corrections = await this.analyzeWithLLM(
+          original,
+          scenario,
+          mode,
+          history,
+        );
+        const heuristicCorrections = this.analyzeHeuristic(
+          original,
+          scenario,
+          "strict",
+        );
+        return this.applyModeLimits(
+          this.mergeCorrections(corrections, heuristicCorrections),
+          mode,
+        );
+      } catch (error) {
+        console.warn(
+          "[CorrectionService] LLM correction failed; using heuristic rules.",
+          error,
+        );
+      }
+    }
+
+    return this.analyzeHeuristic(original, scenario, mode);
+  }
+
+  analyzeHeuristic(
     original: string,
     scenario: Scenario,
     mode: CorrectionMode,
@@ -69,57 +68,188 @@ export class CorrectionService {
       return [];
     }
 
-    const corrections = rules
-      .filter((rule) => rule.matches(original))
-      .map((rule) => {
-        const corrected = rule.correct(original);
-        return this.createCorrection(
-          original,
-          corrected,
-          rule.errorType,
-          rule.explanation,
-          rule.betterExpression(corrected, scenario),
-          rule.severity,
-        );
-      });
-
-    if (mode === "strict" && this.isTooShort(original)) {
-      const correctedBase = corrections.at(-1)?.corrected ?? original;
+    const corrections: CorrectionItem[] = [];
+    const add = (
+      corrected: string,
+      errorType: string,
+      explanation: string,
+      betterExpression: string,
+      severity: CorrectionItem["severity"],
+    ) =>
       corrections.push(
         this.createCorrection(
           original,
-          correctedBase,
-          "Fluency · incomplete answer",
-          "The answer is very short. Add a reason, detail, or example to make it complete.",
-          this.getExpandedExpression(correctedBase, scenario),
-          "low",
+          corrected,
+          errorType,
+          explanation,
+          betterExpression,
+          severity,
         ),
+      );
+
+    if (/\bI have\s+(?:one|two|three|four|five|\d+)\s+year\b/i.test(original)) {
+      add(
+        original.replace(/\byear\b/i, "years"),
+        "Grammar · plural noun",
+        "Use the plural noun “years” after a number greater than one.",
+        "I have three years of experience in backend development.",
+        "high",
       );
     }
 
+    if (/\bI am agree\b/i.test(original)) {
+      add(
+        original.replace(/\bI am agree\b/gi, "I agree"),
+        "Grammar · verb form",
+        "“Agree” is a verb, so it does not need “am”.",
+        "I agree with that approach.",
+        "high",
+      );
+    }
+
+    if (/\bHow to say\b/i.test(original)) {
+      add(
+        original.replace(/\bHow to say\b/gi, "How do you say"),
+        "Grammar · question form",
+        "Use an auxiliary verb when asking a complete question.",
+        "How do you say this more naturally in English?",
+        "medium",
+      );
+    }
+
+    if (mode === "strict" && original.trim().split(/\s+/).length < 4) {
+      const corrected = corrections.at(-1)?.corrected ?? original;
+      add(
+        corrected,
+        "Fluency · incomplete answer",
+        "Add a reason, detail, or example to make the answer complete.",
+        `${corrected.replace(/[.!?]+$/, "")}, and I can explain why.`,
+        "low",
+      );
+    }
+
+    return this.applyModeLimits(corrections, mode);
+  }
+
+  private async analyzeWithLLM(
+    original: string,
+    scenario: Scenario,
+    mode: CorrectionMode,
+    history: ChatMessage[],
+  ): Promise<CorrectionItem[]> {
+    const recentHistory = history
+      .slice(-6)
+      .map((message) => `${message.role}: ${message.content}`)
+      .join("\n");
+    const response = await this.analysisProvider!.analyze([
+      {
+        role: "system",
+        content: [
+          "You are an English speaking coach.",
+          "Analyze the learner's latest sentence for grammar, expression, naturalness, and contextual appropriateness.",
+          "Consider whether it appropriately answers the preceding conversation and fits the scenario.",
+          `Correction mode: ${mode}.`,
+          mode === "gentle"
+            ? "Return only one serious issue, or an empty list."
+            : "Return up to three concise, useful issues.",
+          "Return JSON only with this shape:",
+          '{"corrections":[{"original":"...","corrected":"...","errorType":"Grammar|Expression|Naturalness|Context · detail","explanation":"...","betterExpression":"...","severity":"low|medium|high"}]}',
+        ].join("\n"),
+      },
+      {
+        role: "user",
+        content: [
+          `Scenario: ${scenario.name}`,
+          `Description: ${scenario.description}`,
+          `Learner role: ${scenario.userRole}`,
+          `AI role: ${scenario.aiRole}`,
+          `Goals: ${scenario.goals.join("; ")}`,
+          `Recent conversation:\n${recentHistory || "(none)"}`,
+          `Latest learner sentence: ${original}`,
+        ].join("\n"),
+      },
+    ]);
+    const parsed = parseAnalysisJson<LLMCorrectionResponse>(response);
+
+    return (parsed.corrections ?? [])
+      .map((item) => this.validateCorrection(item, original))
+      .filter((item): item is CorrectionItem => Boolean(item));
+  }
+
+  private validateCorrection(
+    item: Partial<Omit<CorrectionItem, "id">>,
+    original: string,
+  ): CorrectionItem | null {
+    if (
+      typeof item.corrected !== "string" ||
+      typeof item.errorType !== "string" ||
+      typeof item.explanation !== "string" ||
+      typeof item.betterExpression !== "string" ||
+      typeof item.severity !== "string" ||
+      !["low", "medium", "high"].includes(item.severity.toLowerCase())
+    ) {
+      return null;
+    }
+
+    return this.createCorrection(
+      typeof item.original === "string" ? item.original : original,
+      item.corrected,
+      item.errorType,
+      item.explanation,
+      item.betterExpression,
+      item.severity.toLowerCase() as CorrectionItem["severity"],
+    );
+  }
+
+  private applyModeLimits(
+    corrections: CorrectionItem[],
+    mode: CorrectionMode,
+  ): CorrectionItem[] {
     if (mode === "gentle") {
-      return corrections.filter((item) => item.severity === "high").slice(0, 1);
+      return corrections
+        .filter((item) => item.severity !== "low")
+        .sort(
+          (left, right) =>
+            this.getSeverityRank(right.severity) -
+            this.getSeverityRank(left.severity),
+        )
+        .slice(0, 1);
     }
 
-    return corrections.slice(0, 3);
+    return corrections
+      .sort(
+        (left, right) =>
+          this.getSeverityRank(right.severity) -
+          this.getSeverityRank(left.severity),
+      )
+      .slice(0, 3);
   }
 
-  private isTooShort(input: string): boolean {
-    return input.trim().split(/\s+/).filter(Boolean).length < 4;
+  private mergeCorrections(
+    primary: CorrectionItem[],
+    fallback: CorrectionItem[],
+  ): CorrectionItem[] {
+    const merged = [...primary];
+
+    for (const candidate of fallback) {
+      const duplicate = merged.some(
+        (item) =>
+          item.corrected.trim().toLowerCase() ===
+            candidate.corrected.trim().toLowerCase() ||
+          item.errorType.trim().toLowerCase() ===
+            candidate.errorType.trim().toLowerCase(),
+      );
+
+      if (!duplicate) {
+        merged.push(candidate);
+      }
+    }
+
+    return merged;
   }
 
-  private getExpandedExpression(input: string, scenario: Scenario): string {
-    const cleanInput = input.trim().replace(/[.!?]+$/, "");
-
-    if (scenario.id === "interview") {
-      return `${cleanInput}, and I can share a specific example from my experience.`;
-    }
-
-    if (scenario.id === "meeting") {
-      return `${cleanInput}, because it would help us keep the project on schedule.`;
-    }
-
-    return `${cleanInput}, and I’d be happy to explain in more detail.`;
+  private getSeverityRank(severity: CorrectionItem["severity"]): number {
+    return { low: 1, medium: 2, high: 3 }[severity];
   }
 
   private createCorrection(

@@ -36,6 +36,7 @@ export interface ScoreResult {
   fluencyScore: number;
   vocabularyScore: number;
   naturalnessScore: number;
+  contextAppropriatenessScore: number;
   overallScore: number;
 }
 

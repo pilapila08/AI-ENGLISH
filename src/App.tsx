@@ -15,7 +15,8 @@ const initialScore: ScoreResult = {
   fluencyScore: 55,
   vocabularyScore: 55,
   naturalnessScore: 90,
-  overallScore: 71,
+  contextAppropriatenessScore: 60,
+  overallScore: 69,
 };
 
 function App() {
@@ -257,6 +258,7 @@ function App() {
           <FeedbackPanel
             correctionMode={session?.correctionMode ?? correctionMode}
             corrections={session?.corrections ?? []}
+            isAnalyzing={isBusy}
             score={session?.score ?? initialScore}
           />
         </section>

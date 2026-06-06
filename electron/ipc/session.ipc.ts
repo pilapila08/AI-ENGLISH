@@ -61,6 +61,7 @@ export function registerSessionIpc(): void {
         trimmedText,
         scenario,
         currentSession.correctionMode,
+        sessionWithUserMessage.messages,
       ),
     ).catch((error) => {
       console.warn(
@@ -69,13 +70,18 @@ export function registerSessionIpc(): void {
       );
       return [];
     });
-    const [assistantReply, corrections] = await Promise.all([
+    const [assistantReply, corrections, liveScore] = await Promise.all([
       dialogueService.reply(
         scenario,
         sessionWithUserMessage.messages,
         trimmedText,
       ),
       correctionPromise,
+      scoringService.score(
+        sessionWithUserMessage,
+        scenario,
+        sessionWithUserMessage.corrections,
+      ),
     ]);
 
     if (assistantReply.fallbackUsed) {
@@ -87,19 +93,22 @@ export function registerSessionIpc(): void {
     }
 
     const sessionWithReply = sessionService.addAssistantMessage(assistantReply.content);
-    sessionService.updateScore(
-      scoringService.calculate(sessionWithReply, sessionWithReply.corrections),
-    );
+    sessionService.updateScore(liveScore);
     return sessionService.getCurrentSession();
   });
 
-  ipcMain.handle(IPC_CHANNELS.practiceEnd, () => {
+  ipcMain.handle(IPC_CHANNELS.practiceEnd, async () => {
     const currentSession = sessionService.getCurrentSession();
 
     if (currentSession) {
-      sessionService.updateScore(
-        scoringService.calculate(currentSession, currentSession.corrections),
-      );
+      const scenarios = await getScenarios();
+      const scenario = scenarios.find((item) => item.id === currentSession.scenarioId);
+
+      if (scenario) {
+        sessionService.updateScore(
+          await scoringService.score(currentSession, scenario, currentSession.corrections),
+        );
+      }
     }
 
     return sessionService.endSession();

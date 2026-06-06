@@ -4,6 +4,7 @@ interface FeedbackPanelProps {
   correctionMode: CorrectionMode;
   corrections: CorrectionItem[];
   score: ScoreResult;
+  isAnalyzing?: boolean;
 }
 
 const scoreLabels: Array<{ key: keyof ScoreResult; label: string }> = [
@@ -12,6 +13,7 @@ const scoreLabels: Array<{ key: keyof ScoreResult; label: string }> = [
   { key: "fluencyScore", label: "流利度" },
   { key: "vocabularyScore", label: "词汇" },
   { key: "naturalnessScore", label: "自然度" },
+  { key: "contextAppropriatenessScore", label: "语境适切度" },
 ];
 
 const severityStyles: Record<CorrectionItem["severity"], string> = {
@@ -24,6 +26,7 @@ function FeedbackPanel({
   correctionMode,
   corrections,
   score,
+  isAnalyzing = false,
 }: FeedbackPanelProps) {
   const visibleCorrections = corrections.slice(-5).reverse();
 
@@ -74,7 +77,14 @@ function FeedbackPanel({
       <section className="mt-5 min-h-0 flex-1">
         <h3 className="text-sm font-semibold">纠错建议</h3>
         <div className="mt-3 max-h-[390px] space-y-3 overflow-y-auto pr-1">
-          {correctionMode === "immersive" ? (
+          {isAnalyzing && correctionMode !== "immersive" ? (
+            <div className="rounded-2xl border border-violet-100 bg-violet-50 p-5 text-center">
+              <p className="text-sm font-semibold text-brand">LLM 正在分析表达与语境...</p>
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+                分析完成后会自动显示本轮最重要的建议。
+              </p>
+            </div>
+          ) : correctionMode === "immersive" ? (
             <div className="rounded-2xl border border-violet-100 bg-violet-50 p-5 text-center">
               <p className="text-sm font-semibold text-brand">当前为沉浸模式</p>
               <p className="mt-1 text-xs leading-5 text-slate-500">
