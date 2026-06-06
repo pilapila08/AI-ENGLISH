@@ -5,12 +5,14 @@ import { CorrectionService } from "../services/correctionService";
 import { getScenarios } from "../services/scenarioService";
 import { SessionService } from "../services/sessionService";
 import { ScoringService } from "../services/scoringService";
+import { ReportService } from "../services/reportService";
 import { IPC_CHANNELS } from "./channels";
 
 const sessionService = new SessionService();
 const dialogueService = new DialogueService();
 const correctionService = new CorrectionService();
 const scoringService = new ScoringService();
+const reportService = new ReportService();
 
 export function registerSessionIpc(): void {
   ipcMain.handle(
@@ -100,18 +102,38 @@ export function registerSessionIpc(): void {
   ipcMain.handle(IPC_CHANNELS.practiceEnd, async () => {
     const currentSession = sessionService.getCurrentSession();
 
-    if (currentSession) {
-      const scenarios = await getScenarios();
-      const scenario = scenarios.find((item) => item.id === currentSession.scenarioId);
-
-      if (scenario) {
-        sessionService.updateScore(
-          await scoringService.score(currentSession, scenario, currentSession.corrections),
-        );
-      }
+    if (!currentSession) {
+      return null;
     }
 
-    return sessionService.endSession();
+    const scenarios = await getScenarios();
+    const scenario = scenarios.find((item) => item.id === currentSession.scenarioId);
+
+    if (!scenario) {
+      return sessionService.endSession();
+    }
+
+    const finalScore = await scoringService.score(
+      currentSession,
+      scenario,
+      currentSession.corrections,
+    );
+    sessionService.updateScore(finalScore);
+    const completedSession = sessionService.endSession();
+
+    if (!completedSession) {
+      return null;
+    }
+
+    sessionService.updateReport(
+      reportService.generate(
+        completedSession,
+        completedSession.corrections,
+        finalScore,
+        scenario.name,
+      ),
+    );
+    return sessionService.getCurrentSession();
   });
   ipcMain.handle(IPC_CHANNELS.practiceGetCurrent, () =>
     sessionService.getCurrentSession(),

@@ -13,7 +13,9 @@
   "include": [
     "electron/types.ts",
     "electron/services/scoringService.ts",
+    "electron/services/reportService.ts",
     "tests/scoringService.test.ts",
-    "tests/llmAnalysisServices.test.ts"
+    "tests/llmAnalysisServices.test.ts",
+    "tests/reportService.test.ts"
   ]
 }

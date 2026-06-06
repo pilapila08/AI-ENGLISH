@@ -3,6 +3,7 @@ import type {
   ChatMessage,
   CorrectionItem,
   CorrectionMode,
+  PracticeReport,
   PracticeSession,
   ScoreResult,
 } from "../types";
@@ -55,6 +56,24 @@ export class SessionService {
     }
 
     this.currentSession.score = { ...score };
+    return this.cloneSession(this.currentSession);
+  }
+
+  updateReport(report: PracticeReport): PracticeSession {
+    if (!this.currentSession) {
+      throw new Error("There is no current practice session.");
+    }
+
+    this.currentSession.report = {
+      ...report,
+      scores: { ...report.scores },
+      corrections: report.corrections.map((item) => ({ ...item })),
+      strengths: [...report.strengths],
+      weaknesses: [...report.weaknesses],
+      recommendedExpressions: [...report.recommendedExpressions],
+      nextPracticeSuggestions: [...report.nextPracticeSuggestions],
+      studyCards: report.studyCards.map((card) => ({ ...card })),
+    };
     return this.cloneSession(this.currentSession);
   }
 
@@ -114,6 +133,18 @@ export class SessionService {
       messages: session.messages.map((message) => ({ ...message })),
       corrections: session.corrections.map((correction) => ({ ...correction })),
       score: session.score ? { ...session.score } : undefined,
+      report: session.report
+        ? {
+            ...session.report,
+            scores: { ...session.report.scores },
+            corrections: session.report.corrections.map((item) => ({ ...item })),
+            strengths: [...session.report.strengths],
+            weaknesses: [...session.report.weaknesses],
+            recommendedExpressions: [...session.report.recommendedExpressions],
+            nextPracticeSuggestions: [...session.report.nextPracticeSuggestions],
+            studyCards: session.report.studyCards.map((card) => ({ ...card })),
+          }
+        : undefined,
     };
   }
 }

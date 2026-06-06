@@ -40,6 +40,11 @@ export interface ScoreResult {
   overallScore: number;
 }
 
+export interface StudyCard {
+  front: string;
+  back: string;
+}
+
 export interface PracticeReport {
   id: string;
   sessionId: string;
@@ -47,16 +52,13 @@ export interface PracticeReport {
   scenarioName: string;
   durationSeconds: number;
   dialogueTurns: number;
-  score: ScoreResult;
+  scores: ScoreResult;
   strengths: string[];
-  mainIssues: string[];
+  weaknesses: string[];
   corrections: CorrectionItem[];
   recommendedExpressions: string[];
-  nextSteps: string[];
-  learningCards: Array<{
-    front: string;
-    back: string;
-  }>;
+  nextPracticeSuggestions: string[];
+  studyCards: StudyCard[];
   createdAt: string;
 }
 

@@ -28,6 +28,28 @@ export interface ScoreResult {
   overallScore: number;
 }
 
+export interface StudyCard {
+  front: string;
+  back: string;
+}
+
+export interface PracticeReport {
+  id: string;
+  sessionId: string;
+  scenarioId: string;
+  scenarioName: string;
+  durationSeconds: number;
+  dialogueTurns: number;
+  scores: ScoreResult;
+  strengths: string[];
+  weaknesses: string[];
+  corrections: CorrectionItem[];
+  recommendedExpressions: string[];
+  nextPracticeSuggestions: string[];
+  studyCards: StudyCard[];
+  createdAt: string;
+}
+
 export interface PracticeSession {
   id: string;
   scenarioId: string;
@@ -37,6 +59,7 @@ export interface PracticeSession {
   corrections: CorrectionItem[];
   offlineFallback: boolean;
   score?: ScoreResult;
+  report?: PracticeReport;
   startedAt: string;
   endedAt?: string;
 }

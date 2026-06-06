@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import ChatPanel from "./components/ChatPanel";
 import FeedbackPanel from "./components/FeedbackPanel";
 import RecorderBar from "./components/RecorderBar";
+import ReportView from "./components/ReportView";
 import ScenarioPanel from "./components/ScenarioPanel";
 import { usePracticeSession } from "./hooks/usePracticeSession";
 import { useRecorder } from "./hooks/useRecorder";
@@ -28,6 +29,7 @@ function App() {
     useState<CorrectionMode>("gentle");
   const [inputText, setInputText] = useState("");
   const [autoSpeak, setAutoSpeak] = useState(true);
+  const [showReport, setShowReport] = useState(false);
   const lastSpokenMessageIdRef = useRef("");
   const {
     session,
@@ -140,8 +142,15 @@ function App() {
     void speak(lastMessage.content);
   }, [autoSpeak, messages, speak]);
 
+  useEffect(() => {
+    if (session?.report) {
+      setShowReport(true);
+    }
+  }, [session?.report]);
+
   const handleAction = async (action: string) => {
     if (action === "start-practice") {
+      setShowReport(false);
       clearTranscript();
       stopSpeaking();
       await startPractice(selectedScenarioId, correctionMode);
@@ -232,54 +241,60 @@ function App() {
       </header>
 
       <div className="mx-auto flex max-w-[1600px] flex-col gap-5">
-        <section className="grid min-h-[680px] gap-5 xl:grid-cols-[280px_minmax(460px,1fr)_310px]">
-          <ScenarioPanel
-            correctionMode={correctionMode}
-            disabled={isSessionActive}
-            onCorrectionModeChange={setCorrectionMode}
-            onScenarioChange={setSelectedScenarioId}
-            scenarios={scenarios}
-            selectedScenarioId={selectedScenarioId}
-          />
-          <ChatPanel
-            autoSpeak={autoSpeak}
-            isBusy={isBusy}
-            messages={messages}
-            onAutoSpeakChange={setAutoSpeak}
-            onSpeakMessage={speak}
-            onStopSpeaking={stopSpeaking}
-            scenario={selectedScenario}
-            speaking={speaking}
-            speechError={speechError}
-            speechMode={speechMode}
-            speechSupported={speechSupported}
-            speechWarning={speechWarning}
-          />
-          <FeedbackPanel
-            correctionMode={session?.correctionMode ?? correctionMode}
-            corrections={session?.corrections ?? []}
-            isAnalyzing={isBusy}
-            score={session?.score ?? initialScore}
-          />
-        </section>
-        <RecorderBar
-          audioBlob={audioBlob}
-          audioUrl={audioUrl}
-          isActive={isSessionActive}
-          isBusy={isBusy}
-          isTranscribing={isTranscribing}
-          onStartRecording={() => void handleStartRecording()}
-          onStopRecording={stopRecording}
-          onTranscribe={() => void handleTranscribe()}
-          onAction={(action) => void handleAction(action)}
-          onTextChange={setInputText}
-          recording={recording}
-          recordingError={recordingError}
-          text={inputText}
-          transcript={transcript}
-          transcriptionError={transcriptionError}
-          transcriptionWarning={transcriptionWarning}
-        />
+        {showReport && session?.report ? (
+          <ReportView report={session.report} onClose={() => setShowReport(false)} />
+        ) : (
+          <>
+            <section className="grid min-h-[680px] gap-5 xl:grid-cols-[280px_minmax(460px,1fr)_310px]">
+              <ScenarioPanel
+                correctionMode={correctionMode}
+                disabled={isSessionActive}
+                onCorrectionModeChange={setCorrectionMode}
+                onScenarioChange={setSelectedScenarioId}
+                scenarios={scenarios}
+                selectedScenarioId={selectedScenarioId}
+              />
+              <ChatPanel
+                autoSpeak={autoSpeak}
+                isBusy={isBusy}
+                messages={messages}
+                onAutoSpeakChange={setAutoSpeak}
+                onSpeakMessage={speak}
+                onStopSpeaking={stopSpeaking}
+                scenario={selectedScenario}
+                speaking={speaking}
+                speechError={speechError}
+                speechMode={speechMode}
+                speechSupported={speechSupported}
+                speechWarning={speechWarning}
+              />
+              <FeedbackPanel
+                correctionMode={session?.correctionMode ?? correctionMode}
+                corrections={session?.corrections ?? []}
+                isAnalyzing={isBusy}
+                score={session?.score ?? initialScore}
+              />
+            </section>
+            <RecorderBar
+              audioBlob={audioBlob}
+              audioUrl={audioUrl}
+              isActive={isSessionActive}
+              isBusy={isBusy}
+              isTranscribing={isTranscribing}
+              onStartRecording={() => void handleStartRecording()}
+              onStopRecording={stopRecording}
+              onTranscribe={() => void handleTranscribe()}
+              onAction={(action) => void handleAction(action)}
+              onTextChange={setInputText}
+              recording={recording}
+              recordingError={recordingError}
+              text={inputText}
+              transcript={transcript}
+              transcriptionError={transcriptionError}
+              transcriptionWarning={transcriptionWarning}
+            />
+          </>
+        )}
         {sessionError && (
           <p className="rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
             {sessionError}
