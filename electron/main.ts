@@ -21,6 +21,16 @@ function createMainWindow(): void {
     },
   });
 
+  mainWindow.webContents.session.setPermissionCheckHandler(
+    (webContents, permission) =>
+      permission === "media" && webContents === mainWindow.webContents,
+  );
+  mainWindow.webContents.session.setPermissionRequestHandler(
+    (webContents, permission, callback) => {
+      callback(permission === "media" && webContents === mainWindow.webContents);
+    },
+  );
+
   if (isDevelopment) {
     void mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL as string);
     mainWindow.webContents.openDevTools({ mode: "detach" });

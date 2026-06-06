@@ -4,6 +4,7 @@ import FeedbackPanel from "./components/FeedbackPanel";
 import RecorderBar from "./components/RecorderBar";
 import ScenarioPanel from "./components/ScenarioPanel";
 import { usePracticeSession } from "./hooks/usePracticeSession";
+import { useRecorder } from "./hooks/useRecorder";
 import type { CorrectionMode, Scenario, ScoreResult } from "./types";
 
 const placeholderScore: ScoreResult = {
@@ -31,6 +32,14 @@ function App() {
     sendMessage,
     endPractice,
   } = usePracticeSession();
+  const {
+    recording,
+    audioBlob,
+    audioUrl,
+    error: recordingError,
+    startRecording,
+    stopRecording,
+  } = useRecorder();
 
   useEffect(() => {
     let isActive = true;
@@ -88,6 +97,9 @@ function App() {
     }
 
     if (action === "end-practice") {
+      if (recording) {
+        stopRecording();
+      }
       await endPractice();
       return;
     }
@@ -159,10 +171,16 @@ function App() {
           />
         </section>
         <RecorderBar
+          audioBlob={audioBlob}
+          audioUrl={audioUrl}
           isActive={isSessionActive}
           isBusy={isBusy}
+          onStartRecording={() => void startRecording()}
+          onStopRecording={stopRecording}
           onAction={(action) => void handleAction(action)}
           onTextChange={setInputText}
+          recording={recording}
+          recordingError={recordingError}
           text={inputText}
         />
         {sessionError && (
