@@ -22,6 +22,7 @@ export class SessionService {
         this.createMessage("assistant", scenario.openingMessage),
       ],
       corrections: [],
+      offlineFallback: false,
       startedAt: new Date().toISOString(),
     };
 
@@ -35,6 +36,15 @@ export class SessionService {
 
   addAssistantMessage(content: string): PracticeSession {
     return this.addMessage("assistant", content);
+  }
+
+  markOfflineFallback(): PracticeSession {
+    if (!this.currentSession) {
+      throw new Error("There is no current practice session.");
+    }
+
+    this.currentSession.offlineFallback = true;
+    return this.cloneSession(this.currentSession);
   }
 
   getCurrentSession(): PracticeSession | null {

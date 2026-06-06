@@ -24,6 +24,7 @@ export interface PracticeSession {
   status: "active" | "completed";
   messages: ChatMessage[];
   corrections: CorrectionItem[];
+  offlineFallback: boolean;
   startedAt: string;
   endedAt?: string;
 }

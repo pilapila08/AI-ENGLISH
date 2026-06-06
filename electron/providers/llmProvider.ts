@@ -7,6 +7,11 @@ export interface LLMChatInput {
   userInput: string;
 }
 
+export interface LLMMessage {
+  role: "system" | "user" | "assistant";
+  content: string;
+}
+
 export interface LLMProvider {
   chat(input: LLMChatInput): Promise<string>;
 }

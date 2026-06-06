@@ -66,6 +66,7 @@ export interface PracticeSession {
   status: "active" | "completed";
   messages: ChatMessage[];
   corrections: CorrectionItem[];
+  offlineFallback: boolean;
   score?: ScoreResult;
   report?: PracticeReport;
   startedAt: string;

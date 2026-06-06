@@ -23,6 +23,22 @@ npm run dev
 Vite starts the renderer development server, then Electron opens the desktop
 window.
 
+## LLM Configuration
+
+Copy `.env.example` to `.env`, then configure an OpenAI Chat Completions
+compatible API:
+
+```env
+OPENAI_API_KEY=your-api-key
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_MODEL=gpt-4o-mini
+USE_MOCK_LLM=false
+```
+
+Set `USE_MOCK_LLM=true`, or leave `OPENAI_API_KEY` empty, to run entirely with
+the offline MockLLMProvider. If a configured remote provider fails, the current
+practice session automatically falls back to the mock provider.
+
 ## Build
 
 ```bash

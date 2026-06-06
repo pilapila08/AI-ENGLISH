@@ -129,7 +129,11 @@ function App() {
               : "border-emerald-200 bg-emerald-50 text-emerald-700"
           }`}
         >
-          {isSessionActive ? "练习进行中" : "场景配置已加载"}
+          {session?.offlineFallback
+            ? "已切换到离线模拟模式"
+            : isSessionActive
+              ? "练习进行中"
+              : "场景配置已加载"}
         </span>
       </header>
 

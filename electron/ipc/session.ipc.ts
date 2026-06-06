@@ -51,7 +51,10 @@ export function registerSessionIpc(): void {
       trimmedText,
     );
 
-    return sessionService.addAssistantMessage(assistantReply);
+    if (assistantReply.fallbackUsed) {
+      sessionService.markOfflineFallback();
+    }
+    return sessionService.addAssistantMessage(assistantReply.content);
   });
 
   ipcMain.handle(IPC_CHANNELS.practiceEnd, () => sessionService.endSession());
