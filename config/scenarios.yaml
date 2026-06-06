@@ -1,0 +1,79 @@
+- id: interview
+  name: 英文面试
+  description: 模拟技术岗位英文面试，练习清晰介绍经历、项目和职业目标。
+  userRole: 求职候选人
+  aiRole: 技术面试官
+  difficulty: intermediate
+  goals:
+    - 清晰完成自我介绍
+    - 使用 STAR 方法描述项目经历
+    - 自然回答追问
+  openingMessage: Hello! Thanks for joining us today. Could you start by telling me a little about yourself?
+  sampleQuestions:
+    - What project are you most proud of?
+    - How do you handle challenges at work?
+    - Why are you interested in this role?
+
+- id: restaurant
+  name: 餐厅点餐
+  description: 在英文餐厅环境中完成询问菜单、点餐和提出特殊需求。
+  userRole: 顾客
+  aiRole: 餐厅服务员
+  difficulty: beginner
+  goals:
+    - 自然询问菜品信息
+    - 清楚表达点餐需求
+    - 礼貌提出特殊要求
+  openingMessage: Good evening! Welcome to Riverside Bistro. May I get you something to drink first?
+  sampleQuestions:
+    - What do you recommend?
+    - Does this dish contain nuts?
+    - Could I have the bill, please?
+
+- id: meeting
+  name: 商务会议
+  description: 参与英文项目会议，练习表达观点、确认信息和推动讨论。
+  userRole: 项目成员
+  aiRole: 会议主持人
+  difficulty: advanced
+  goals:
+    - 有条理地表达观点
+    - 礼貌提出不同意见
+    - 总结行动事项
+  openingMessage: Thanks for joining the meeting. Could you give us a quick update on your current progress?
+  sampleQuestions:
+    - What is the biggest risk right now?
+    - Do you agree with this timeline?
+    - What should our next step be?
+
+- id: airport
+  name: 机场出行
+  description: 模拟机场值机和问路，练习处理常见英文出行情境。
+  userRole: 旅客
+  aiRole: 机场工作人员
+  difficulty: beginner
+  goals:
+    - 顺利完成值机
+    - 询问登机口和时间
+    - 描述行李相关问题
+  openingMessage: Good morning. May I see your passport and booking confirmation, please?
+  sampleQuestions:
+    - Where is my departure gate?
+    - Can I check in this bag?
+    - Is the flight on time?
+
+- id: self_introduction
+  name: 自我介绍
+  description: 面向学习、社交或工作场合，练习自然且有重点的英文自我介绍。
+  userRole: 自我介绍者
+  aiRole: 新认识的朋友
+  difficulty: beginner
+  goals:
+    - 介绍个人背景
+    - 分享兴趣与目标
+    - 自然延续对话
+  openingMessage: Hi! It is great to meet you. Could you introduce yourself?
+  sampleQuestions:
+    - What do you enjoy doing in your free time?
+    - What are you currently working on?
+    - What would you like to improve this year?

@@ -1,44 +1,7 @@
-# Python cache
-__pycache__/
-*.py[cod]
-*$py.class
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-
-# Virtual environments
-.venv/
-venv/
-env/
-ENV/
-
 # Environment variables and secrets
 .env
 .env.*
 !.env.example
-
-# Local app data and generated artifacts
-data/
-outputs/
-uploads/
-temp/
-tmp/
-*.sqlite
-*.sqlite3
-*.db
-*.wav
-*.mp3
-*.m4a
-*.ogg
-*.flac
-*.webm
-
-# Streamlit and local runtime files
-.streamlit/*
-!.streamlit/config.toml
-.streamlit/secrets.toml
 
 # IDE and OS files
 .vscode/
@@ -46,6 +9,13 @@ tmp/
 .DS_Store
 Thumbs.db
 
-# Logs
+# Logs and local runtime files
 *.log
 logs/
+
+# Node.js and Electron build artifacts
+node_modules/
+dist/
+dist-electron/
+release/
+*.tsbuildinfo
