@@ -6,9 +6,12 @@ import { MockASRProvider } from "./mockASRProvider";
 import { MockLLMProvider } from "./mockLLMProvider";
 import { OpenAICompatibleProvider } from "./openAICompatibleProvider";
 import { WhisperAPIProvider } from "./whisperAPIProvider";
+import type { TTSProvider } from "./ttsProvider";
+import { XiaomiMimoTTSProvider } from "./xiaomiMimoTTSProvider";
 
 export type LLMMode = "mock" | "remote" | "fallback";
 export type ASRMode = "mock" | "whisper" | "mimo";
+export type TTSMode = "mimo" | "unavailable";
 
 export interface ProviderSelection {
   provider: LLMProvider;
@@ -18,6 +21,11 @@ export interface ProviderSelection {
 export interface ASRProviderSelection {
   provider: ASRProvider;
   mode: ASRMode;
+}
+
+export interface TTSProviderSelection {
+  provider: TTSProvider | null;
+  mode: TTSMode;
 }
 
 export function createLLMProvider(): ProviderSelection {
@@ -100,4 +108,40 @@ export function createASRProvider(): ASRProviderSelection {
 
   console.info("[ProviderFactory] Using MockASRProvider.");
   return { provider: new MockASRProvider(), mode: "mock" };
+}
+
+export function createTTSProvider(): TTSProviderSelection {
+  const providerName = process.env.TTS_PROVIDER?.trim().toLowerCase();
+
+  if (providerName !== "mimo") {
+    console.info("[ProviderFactory] MiMo TTS is disabled.");
+    return { provider: null, mode: "unavailable" };
+  }
+
+  const apiKey =
+    process.env.MIMO_TTS_API_KEY?.trim() ||
+    process.env.MIMO_API_KEY?.trim() ||
+    process.env.OPENAI_API_KEY?.trim();
+
+  if (!apiKey) {
+    console.warn(
+      "[ProviderFactory] TTS_PROVIDER=mimo but no MiMo API key is configured.",
+    );
+    return { provider: null, mode: "unavailable" };
+  }
+
+  const model = process.env.MIMO_TTS_MODEL?.trim() || "mimo-v2.5-tts";
+  console.info(`[ProviderFactory] Using MiMoTTSProvider with model ${model}.`);
+
+  return {
+    provider: new XiaomiMimoTTSProvider({
+      apiKey,
+      baseUrl:
+        process.env.MIMO_TTS_BASE_URL?.trim() ||
+        "https://api.xiaomimimo.com/v1",
+      model,
+      voice: process.env.MIMO_TTS_VOICE?.trim() || "Chloe",
+    }),
+    mode: "mimo",
+  };
 }

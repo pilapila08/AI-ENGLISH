@@ -19,6 +19,15 @@ declare global {
         arrayBuffer: ArrayBuffer,
         meta?: { mimeType?: string; scenarioId?: string },
       ) => Promise<string>;
+      synthesizeSpeech: (
+        text: string,
+        options?: { voice?: string; style?: string },
+      ) => Promise<{
+        audioData: Uint8Array | null;
+        mimeType: "audio/wav" | null;
+        mode: "mimo" | "unavailable";
+        warning?: string;
+      }>;
     };
   }
 }

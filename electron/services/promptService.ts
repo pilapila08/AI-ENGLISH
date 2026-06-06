@@ -9,6 +9,8 @@ export class PromptService {
       `Practice goals: ${scenario.goals.join("; ")}`,
       "Reply naturally in English and stay in character.",
       "Keep each reply concise: one to three sentences.",
+      "Make the first sentence a short acknowledgement of no more than 8 words.",
+      "Keep the complete reply under 35 words to support low-latency speech synthesis.",
       "Ask a relevant follow-up question to keep the conversation moving.",
       "Do not provide long grammar corrections during the conversation.",
     ].join("\n");

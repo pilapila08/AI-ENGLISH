@@ -69,6 +69,24 @@ MIMO_ASR_MODEL=mimo-v2.5-asr
 `OPENAI_API_KEY`. Recorded WebM audio is converted to WAV before it is sent to
 the Main Process because MiMo V2.5 ASR accepts WAV or MP3 input.
 
+## TTS Configuration
+
+MiMo TTS is used for automatic and manual English reply playback:
+
+```env
+TTS_PROVIDER=mimo
+MIMO_TTS_API_KEY=your-mimo-api-key
+MIMO_TTS_BASE_URL=https://api.xiaomimimo.com/v1
+MIMO_TTS_MODEL=mimo-v2.5-tts
+MIMO_TTS_VOICE=Chloe
+```
+
+`MIMO_TTS_API_KEY` may be omitted to reuse `MIMO_API_KEY` or
+`OPENAI_API_KEY`. The API key stays in the Electron Main Process. Replies are
+split into sentences, synthesized in parallel, cached in memory, and played in
+order to reduce time to first audio. The application does not fall back to
+browser Web Speech.
+
 ## Build
 
 ```bash

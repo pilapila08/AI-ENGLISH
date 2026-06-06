@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ChatPanel from "./components/ChatPanel";
 import FeedbackPanel from "./components/FeedbackPanel";
 import RecorderBar from "./components/RecorderBar";
@@ -6,6 +6,7 @@ import ScenarioPanel from "./components/ScenarioPanel";
 import { usePracticeSession } from "./hooks/usePracticeSession";
 import { useRecorder } from "./hooks/useRecorder";
 import { useTranscription } from "./hooks/useTranscription";
+import { useSpeech } from "./hooks/useSpeech";
 import type { CorrectionMode, Scenario, ScoreResult } from "./types";
 
 const placeholderScore: ScoreResult = {
@@ -25,6 +26,8 @@ function App() {
   const [correctionMode, setCorrectionMode] =
     useState<CorrectionMode>("gentle");
   const [inputText, setInputText] = useState("");
+  const [autoSpeak, setAutoSpeak] = useState(true);
+  const lastSpokenMessageIdRef = useRef("");
   const {
     session,
     isBusy,
@@ -49,6 +52,15 @@ function App() {
     transcribe,
     clearTranscript,
   } = useTranscription();
+  const {
+    speaking,
+    supported: speechSupported,
+    mode: speechMode,
+    error: speechError,
+    warning: speechWarning,
+    speak,
+    stop: stopSpeaking,
+  } = useSpeech();
 
   useEffect(() => {
     let isActive = true;
@@ -90,9 +102,47 @@ function App() {
   const messages =
     session?.scenarioId === selectedScenarioId ? session.messages : [];
 
+  useEffect(() => {
+    if (!selectedScenario?.openingMessage) {
+      return;
+    }
+
+    const openingChunks =
+      selectedScenario.openingMessage
+        .match(/[^.!?]+[.!?]+|[^.!?]+$/g)
+        ?.map((part) => part.trim())
+        .filter(Boolean) ?? [];
+
+    // Warm the Main Process TTS cache while the learner reviews the scenario.
+    void Promise.all(
+      openingChunks.map((chunk) =>
+        window.speakCoachAPI.synthesizeSpeech(chunk).catch((error) => {
+          console.warn("[TTS] Failed to prewarm opening message:", error);
+        }),
+      ),
+    );
+  }, [selectedScenario?.id, selectedScenario?.openingMessage]);
+
+  useEffect(() => {
+    const lastMessage = messages.at(-1);
+
+    if (
+      !autoSpeak ||
+      !lastMessage ||
+      lastMessage.role !== "assistant" ||
+      lastSpokenMessageIdRef.current === lastMessage.id
+    ) {
+      return;
+    }
+
+    lastSpokenMessageIdRef.current = lastMessage.id;
+    void speak(lastMessage.content);
+  }, [autoSpeak, messages, speak]);
+
   const handleAction = async (action: string) => {
     if (action === "start-practice") {
       clearTranscript();
+      stopSpeaking();
       await startPractice(selectedScenarioId, correctionMode);
       return;
     }
@@ -107,6 +157,7 @@ function App() {
     }
 
     if (action === "end-practice") {
+      stopSpeaking();
       if (recording) {
         stopRecording();
       }
@@ -189,9 +240,18 @@ function App() {
             selectedScenarioId={selectedScenarioId}
           />
           <ChatPanel
+            autoSpeak={autoSpeak}
             isBusy={isBusy}
             messages={messages}
+            onAutoSpeakChange={setAutoSpeak}
+            onSpeakMessage={speak}
+            onStopSpeaking={stopSpeaking}
             scenario={selectedScenario}
+            speaking={speaking}
+            speechError={speechError}
+            speechMode={speechMode}
+            speechSupported={speechSupported}
+            speechWarning={speechWarning}
           />
           <FeedbackPanel
             correctionMode={correctionMode}

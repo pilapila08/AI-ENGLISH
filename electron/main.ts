@@ -3,8 +3,13 @@ import path from "node:path";
 import { registerScenarioIpc } from "./ipc/scenario.ipc";
 import { registerSessionIpc } from "./ipc/session.ipc";
 import { registerSpeechIpc } from "./ipc/speech.ipc";
+import { registerTTSIpc } from "./ipc/tts.ipc";
 
 const isDevelopment = Boolean(process.env.VITE_DEV_SERVER_URL);
+
+// TTS audio is generated asynchronously, after the original user gesture has
+// finished. Allow the trusted renderer to play that audio automatically.
+app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required");
 
 function createMainWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -21,6 +26,7 @@ function createMainWindow(): void {
       sandbox: true,
     },
   });
+  mainWindow.webContents.setAudioMuted(false);
 
   mainWindow.webContents.session.setPermissionCheckHandler(
     (webContents, permission) =>
@@ -45,6 +51,7 @@ app.whenReady().then(() => {
   registerScenarioIpc();
   registerSessionIpc();
   registerSpeechIpc();
+  registerTTSIpc();
   createMainWindow();
 
   app.on("activate", () => {

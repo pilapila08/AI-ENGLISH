@@ -12,4 +12,8 @@ contextBridge.exposeInMainWorld("speakCoachAPI", {
     arrayBuffer: ArrayBuffer,
     meta?: { mimeType?: string; scenarioId?: string },
   ) => ipcRenderer.invoke("speech:transcribe", arrayBuffer, meta),
+  synthesizeSpeech: (
+    text: string,
+    options?: { voice?: string; style?: string },
+  ) => ipcRenderer.invoke("speech:synthesize", text, options),
 });
