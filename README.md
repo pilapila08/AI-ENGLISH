@@ -4,6 +4,8 @@ SpeakCoach AI Desktop 是一款本地优先的 AI 英语口语陪练桌面客户
 
 项目采用 Electron + React + TypeScript + Vite + TailwindCSS 开发。Renderer 只负责界面与交互，文件读写、会话管理、LLM、ASR、TTS 和本地存储均在 Electron Main Process 中完成，并通过安全的 preload API 与 IPC 调用。
 
+项目介绍链接：[英语口语跟练项目展示_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV18DEt6mEZz/?vd_source=0696071176aaacab4ebf96291bb4f1b9)
+
 ## 项目亮点
 
 - AI 语言训练舱风格：深色玻璃拟态、动态语音波形、教练反馈面板与能力仪表盘。
