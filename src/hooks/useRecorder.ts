@@ -5,6 +5,7 @@ interface UseRecorderResult {
   audioBlob: Blob | null;
   audioUrl: string;
   error: string;
+  elapsedSeconds: number;
   startRecording: () => Promise<void>;
   stopRecording: () => void;
 }
@@ -42,6 +43,7 @@ export function useRecorder(): UseRecorderResult {
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [audioUrl, setAudioUrl] = useState("");
   const [error, setError] = useState("");
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -58,6 +60,7 @@ export function useRecorder(): UseRecorderResult {
     }
 
     setError("");
+    setElapsedSeconds(0);
 
     try {
       if (!navigator.mediaDevices?.getUserMedia) {
@@ -154,11 +157,24 @@ export function useRecorder(): UseRecorderResult {
     [stopTracks],
   );
 
+  useEffect(() => {
+    if (!recording) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setElapsedSeconds((seconds) => seconds + 1);
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [recording]);
+
   return {
     recording,
     audioBlob,
     audioUrl,
     error,
+    elapsedSeconds,
     startRecording,
     stopRecording,
   };

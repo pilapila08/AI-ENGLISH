@@ -1,23 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
+import AppNavigation from "../components/AppNavigation";
 import ReportView from "../components/ReportView";
 import type { HistoryRecord, HistorySummary } from "../types";
 
 interface HistoryPageProps {
-  onBack: () => void;
+  onNavigate: (page: "practice" | "history") => void;
 }
 
 function formatDate(value: string): string {
   const date = new Date(value);
-
   return Number.isNaN(date.getTime())
     ? value
-    : new Intl.DateTimeFormat("zh-CN", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }).format(date);
+    : new Intl.DateTimeFormat("zh-CN", { dateStyle: "medium", timeStyle: "short" }).format(date);
 }
 
-export default function HistoryPage({ onBack }: HistoryPageProps) {
+export default function HistoryPage({ onNavigate }: HistoryPageProps) {
   const [history, setHistory] = useState<HistorySummary[]>([]);
   const [selected, setSelected] = useState<HistoryRecord | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +23,6 @@ export default function HistoryPage({ onBack }: HistoryPageProps) {
   const loadHistory = useCallback(async () => {
     setIsLoading(true);
     setError("");
-
     try {
       setHistory(await window.speakCoachAPI.listHistory());
     } catch (loadError) {
@@ -37,98 +33,51 @@ export default function HistoryPage({ onBack }: HistoryPageProps) {
     }
   }, []);
 
-  useEffect(() => {
-    void loadHistory();
-  }, [loadHistory]);
+  useEffect(() => void loadHistory(), [loadHistory]);
 
   const openDetail = async (sessionId: string) => {
     setError("");
-
     try {
       const detail = await window.speakCoachAPI.getHistoryDetail(sessionId);
-
-      if (!detail) {
-        setError("未找到这条练习记录。");
-        return;
-      }
-
-      setSelected(detail);
+      detail ? setSelected(detail) : setError("未找到这条练习记录。");
     } catch (detailError) {
       console.error("[HistoryPage] Failed to load history detail:", detailError);
       setError("完整报告加载失败，请稍后重试。");
     }
   };
 
-  if (selected) {
-    return (
-      <main className="min-h-screen bg-mist p-5 text-ink">
-        <div className="mx-auto max-w-[1400px]">
-          <ReportView report={selected.report} onClose={() => setSelected(null)} />
-        </div>
-      </main>
-    );
-  }
-
   return (
-    <main className="min-h-screen bg-mist p-5 text-ink">
-      <div className="mx-auto max-w-[1200px]">
-        <header className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-brand">
-              Local practice archive
-            </p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight">历史练习记录</h1>
-            <p className="mt-2 text-sm text-slate-500">
-              回顾每次练习的评分、对话轮数与完整课后报告。
-            </p>
-          </div>
-          <button
-            className="rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-200"
-            onClick={onBack}
-            type="button"
-          >
-            返回练习
-          </button>
-        </header>
-
-        {error && (
-          <p className="mb-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
-            {error}
-          </p>
-        )}
-
-        {isLoading ? (
-          <section className="rounded-3xl bg-white p-8 text-center text-sm text-slate-500 shadow-panel">
-            正在加载历史记录...
-          </section>
+    <main className="flex h-screen min-h-0 flex-col overflow-hidden bg-mist p-3 text-ink">
+      <AppNavigation activePage="history" onNavigate={onNavigate} status={`${history.length} 份本地报告`} statusTone="ready" />
+      <div className="app-content-enter mx-auto min-h-0 w-full max-w-[1600px] flex-1 overflow-y-auto">
+        {selected ? (
+          <ReportView report={selected.report} onClose={() => setSelected(null)} />
+        ) : error ? (
+          <StateCard title="历史记录加载失败" description={error} />
+        ) : isLoading ? (
+          <StateCard title="正在加载历史记录..." description="正在读取本地练习报告。" loading />
         ) : history.length === 0 ? (
-          <section className="rounded-3xl bg-white p-10 text-center shadow-panel">
-            <p className="text-lg font-bold">还没有历史记录</p>
-            <p className="mt-2 text-sm text-slate-500">
-              完成一次练习并生成报告后，记录会自动保存在本地。
-            </p>
-          </section>
+          <StateCard title="还没有历史记录" description="完成一次练习后，报告会自动保存在这里。" />
         ) : (
-          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {history.map((item) => (
+          <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {history.map((item, index) => (
               <button
-                className="rounded-3xl border border-white bg-white p-5 text-left shadow-panel transition hover:-translate-y-1 hover:border-violet-200"
+                className="app-history-card group rounded-2xl border border-white/80 bg-white/90 p-4 text-left shadow-panel transition duration-300 hover:-translate-y-1 hover:border-violet-200 hover:shadow-xl"
                 key={item.sessionId}
                 onClick={() => void openDetail(item.sessionId)}
+                style={{ animationDelay: `${index * 55}ms` }}
                 type="button"
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-semibold text-slate-400">
-                      {formatDate(item.savedAt)}
-                    </p>
-                    <h2 className="mt-2 text-lg font-bold text-ink">{item.scenarioName}</h2>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-[11px] font-semibold text-slate-400">{formatDate(item.savedAt)}</p>
+                    <h3 className="mt-1.5 truncate text-base font-black">{item.scenarioName}</h3>
                   </div>
-                  <span className="grid size-14 place-items-center rounded-2xl bg-violet-50 text-xl font-black text-brand">
+                  <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-violet-100 to-cyan-100 text-xl font-black text-brand transition duration-300 group-hover:scale-105">
                     {item.overallScore}
                   </span>
                 </div>
-                <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4 text-sm">
+                <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
                   <span className="text-slate-500">对话轮数</span>
                   <strong>{item.dialogueTurns} 轮</strong>
                 </div>
@@ -138,5 +87,15 @@ export default function HistoryPage({ onBack }: HistoryPageProps) {
         )}
       </div>
     </main>
+  );
+}
+
+function StateCard({ title, description, loading = false }: { title: string; description: string; loading?: boolean }) {
+  return (
+    <section className="app-enter rounded-2xl border border-white bg-white/90 p-8 text-center shadow-panel">
+      {loading && <div className="mx-auto mb-3 size-7 animate-spin rounded-full border-2 border-violet-100 border-t-brand" />}
+      <p className="text-base font-black">{title}</p>
+      <p className="mt-1 text-xs text-slate-500">{description}</p>
+    </section>
   );
 }

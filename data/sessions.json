@@ -187,5 +187,164 @@
       ],
       "createdAt": "2026-06-07T03:55:20.754Z"
     }
+  },
+  {
+    "sessionId": "53a458ff-de81-455e-acda-0bafbaedc7ba",
+    "savedAt": "2026-06-07T04:52:24.795Z",
+    "session": {
+      "id": "53a458ff-de81-455e-acda-0bafbaedc7ba",
+      "scenarioId": "meeting",
+      "correctionMode": "immersive",
+      "status": "completed",
+      "messages": [
+        {
+          "id": "230f5cad-a802-4854-9392-880623c66c6f",
+          "role": "assistant",
+          "content": "Thanks for joining the meeting. Could you give us a quick update on your current progress?",
+          "createdAt": "2026-06-07T04:51:15.055Z"
+        },
+        {
+          "id": "bffcfe59-e77a-4cb9-bb01-39226999280d",
+          "role": "user",
+          "content": "Yes, uh, I think we can update the U. I. part.",
+          "createdAt": "2026-06-07T04:51:36.686Z",
+          "transcript": "Yes, uh, I think we can update the U. I. part."
+        },
+        {
+          "id": "b7a61ae1-ee3f-4bc4-8f99-ab149c04391c",
+          "role": "assistant",
+          "content": "Good, UI updates are important. What specific changes are you planning to make?",
+          "createdAt": "2026-06-07T04:51:38.965Z"
+        },
+        {
+          "id": "5d346cca-34be-4765-8d53-fe7a7fc28869",
+          "role": "user",
+          "content": "Make it more beautiful and the users can see more UI in one screen.",
+          "createdAt": "2026-06-07T04:52:09.830Z",
+          "transcript": "Make it more beautiful and the users can see more UI in one screen."
+        },
+        {
+          "id": "82447af3-3234-4a83-9c85-b8e0cbecac07",
+          "role": "assistant",
+          "content": "Got it, that sounds like a good direction. Do you have a timeline for these UI changes?",
+          "createdAt": "2026-06-07T04:52:12.665Z"
+        }
+      ],
+      "corrections": [],
+      "offlineFallback": false,
+      "startedAt": "2026-06-07T04:51:15.055Z",
+      "score": {
+        "pronunciationScore": 85,
+        "grammarScore": 70,
+        "fluencyScore": 75,
+        "vocabularyScore": 65,
+        "naturalnessScore": 70,
+        "contextAppropriatenessScore": 80,
+        "overallScore": 74
+      },
+      "endedAt": "2026-06-07T04:52:24.792Z",
+      "report": {
+        "id": "eb3cdfa9-54a0-4807-9394-371857319c6b",
+        "sessionId": "53a458ff-de81-455e-acda-0bafbaedc7ba",
+        "scenarioId": "meeting",
+        "scenarioName": "商务会议",
+        "durationSeconds": 70,
+        "dialogueTurns": 2,
+        "scores": {
+          "pronunciationScore": 85,
+          "grammarScore": 70,
+          "fluencyScore": 75,
+          "vocabularyScore": 65,
+          "naturalnessScore": 70,
+          "contextAppropriatenessScore": 80,
+          "overallScore": 74
+        },
+        "strengths": [
+          "发音清晰度估算表现较好，本次得分 85 分。",
+          "语境适切度表现较好，本次得分 80 分。"
+        ],
+        "weaknesses": [
+          "词汇丰富度仍有提升空间，本次得分 65 分。",
+          "表达自然度仍有提升空间，本次得分 70 分。"
+        ],
+        "corrections": [],
+        "recommendedExpressions": [
+          "From my perspective, the key issue is...",
+          "Could we clarify the next steps?",
+          "I suggest that we..."
+        ],
+        "nextPracticeSuggestions": [
+          "下一次重点练习词汇丰富度，尝试连续回答 2-3 句话。",
+          "围绕“meeting”场景复用本报告中的推荐表达。",
+          "复习表达自然度相关反馈，并在下一轮对话中主动应用。"
+        ],
+        "studyCards": [
+          {
+            "front": "场景表达",
+            "back": "From my perspective, the key issue is..."
+          },
+          {
+            "front": "场景表达",
+            "back": "Could we clarify the next steps?"
+          },
+          {
+            "front": "场景表达",
+            "back": "I suggest that we..."
+          }
+        ],
+        "createdAt": "2026-06-07T04:52:24.793Z"
+      }
+    },
+    "report": {
+      "id": "eb3cdfa9-54a0-4807-9394-371857319c6b",
+      "sessionId": "53a458ff-de81-455e-acda-0bafbaedc7ba",
+      "scenarioId": "meeting",
+      "scenarioName": "商务会议",
+      "durationSeconds": 70,
+      "dialogueTurns": 2,
+      "scores": {
+        "pronunciationScore": 85,
+        "grammarScore": 70,
+        "fluencyScore": 75,
+        "vocabularyScore": 65,
+        "naturalnessScore": 70,
+        "contextAppropriatenessScore": 80,
+        "overallScore": 74
+      },
+      "strengths": [
+        "发音清晰度估算表现较好，本次得分 85 分。",
+        "语境适切度表现较好，本次得分 80 分。"
+      ],
+      "weaknesses": [
+        "词汇丰富度仍有提升空间，本次得分 65 分。",
+        "表达自然度仍有提升空间，本次得分 70 分。"
+      ],
+      "corrections": [],
+      "recommendedExpressions": [
+        "From my perspective, the key issue is...",
+        "Could we clarify the next steps?",
+        "I suggest that we..."
+      ],
+      "nextPracticeSuggestions": [
+        "下一次重点练习词汇丰富度，尝试连续回答 2-3 句话。",
+        "围绕“meeting”场景复用本报告中的推荐表达。",
+        "复习表达自然度相关反馈，并在下一轮对话中主动应用。"
+      ],
+      "studyCards": [
+        {
+          "front": "场景表达",
+          "back": "From my perspective, the key issue is..."
+        },
+        {
+          "front": "场景表达",
+          "back": "Could we clarify the next steps?"
+        },
+        {
+          "front": "场景表达",
+          "back": "I suggest that we..."
+        }
+      ],
+      "createdAt": "2026-06-07T04:52:24.793Z"
+    }
   }
 ]

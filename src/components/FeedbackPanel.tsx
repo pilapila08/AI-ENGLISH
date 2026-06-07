@@ -7,8 +7,8 @@ interface FeedbackPanelProps {
   isAnalyzing?: boolean;
 }
 
-const scoreLabels: Array<{ key: keyof ScoreResult; label: string }> = [
-  { key: "pronunciationScore", label: "发音" },
+const scores: Array<{ key: keyof Omit<ScoreResult, "overallScore">; label: string }> = [
+  { key: "pronunciationScore", label: "发音清晰度" },
   { key: "grammarScore", label: "语法" },
   { key: "fluencyScore", label: "流利度" },
   { key: "vocabularyScore", label: "词汇" },
@@ -16,128 +16,103 @@ const scoreLabels: Array<{ key: keyof ScoreResult; label: string }> = [
   { key: "contextAppropriatenessScore", label: "语境适切度" },
 ];
 
-const severityStyles: Record<CorrectionItem["severity"], string> = {
+const severityStyle = {
   high: "bg-red-100 text-red-700",
   medium: "bg-amber-100 text-amber-700",
   low: "bg-sky-100 text-sky-700",
 };
 
-function FeedbackPanel({
+export default function FeedbackPanel({
   correctionMode,
   corrections,
   score,
   isAnalyzing = false,
 }: FeedbackPanelProps) {
-  const visibleCorrections = corrections.slice(-5).reverse();
+  const visible = corrections.slice(-5).reverse();
+  const activeFeedback = correctionMode !== "immersive";
 
   return (
-    <aside className="flex min-h-0 flex-col rounded-3xl bg-white p-5 shadow-panel">
+    <aside className={`app-panel-right flex min-h-0 flex-col overflow-hidden rounded-2xl border bg-white/95 p-3.5 shadow-panel ${
+      activeFeedback ? "border-violet-200 ring-2 ring-violet-100/70" : "border-white/80"
+    }`}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand">
-            Live feedback
-          </p>
-          <h2 className="mt-1 text-lg font-semibold">实时反馈</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand">Live feedback</p>
+          <h2 className="mt-1 text-lg font-bold">实时反馈</h2>
         </div>
-        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-500">
+        <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
+          activeFeedback ? "bg-violet-100 text-brand" : "bg-slate-100 text-slate-500"
+        }`}>
           {correctionMode}
         </span>
       </div>
 
-      <section className="mt-5 rounded-2xl bg-slate-900 p-5 text-white">
+      <section className="mt-3 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 p-3.5 text-white shadow-lg shadow-slate-200">
         <div className="flex items-end justify-between">
           <div>
             <p className="text-xs text-slate-400">当前综合评分</p>
-            <p className="mt-1 text-4xl font-bold">{score.overallScore}</p>
+            <p className="text-4xl font-black">{score.overallScore}</p>
           </div>
-          <span className="text-xs text-slate-400">实时估算</span>
+          <span className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] text-slate-300">实时估算</span>
         </div>
-        <div className="mt-5 space-y-3">
-          {scoreLabels.map(({ key, label }) => (
+        <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2">
+          {scores.map(({ key, label }) => (
             <div key={key}>
-              <div className="mb-1 flex justify-between text-xs">
-                <span className="text-slate-300">{label}</span>
+              <div className="mb-1 flex justify-between text-[10px]">
+                <span className="text-slate-400">{label}</span>
                 <span>{score[key]}</span>
               </div>
               <div className="h-1.5 overflow-hidden rounded-full bg-slate-700">
-                <div
-                  className="h-full rounded-full bg-violet-400"
-                  style={{ width: `${score[key]}%` }}
-                />
+                <div className="h-full rounded-full bg-violet-400" style={{ width: `${score[key]}%` }} />
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      <p className="mt-2 text-[11px] leading-4 text-slate-400">
-        当前发音分为基于 ASR 文本完整度的清晰度估算，并非声学级发音测评。
-      </p>
-
-      <section className="mt-5 min-h-0 flex-1">
-        <h3 className="text-sm font-semibold">纠错建议</h3>
-        <div className="mt-3 max-h-[390px] space-y-3 overflow-y-auto pr-1">
-          {isAnalyzing && correctionMode !== "immersive" ? (
-            <div className="rounded-2xl border border-violet-100 bg-violet-50 p-5 text-center">
-              <p className="text-sm font-semibold text-brand">LLM 正在分析表达与语境...</p>
-              <p className="mt-1 text-xs leading-5 text-slate-500">
-                分析完成后会自动显示本轮最重要的建议。
-              </p>
+      <section className="mt-3 min-h-0 flex-1">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-bold">纠错建议</h3>
+          {isAnalyzing && activeFeedback && <span className="size-2 animate-pulse rounded-full bg-violet-500" />}
+        </div>
+        <div className="mt-2 max-h-[390px] space-y-2 overflow-y-auto pr-1">
+          {correctionMode === "immersive" ? (
+            <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-violet-50 p-5 text-center">
+              <p className="text-sm font-bold text-brand">沉浸模式进行中</p>
+              <p className="mt-2 text-xs leading-5 text-slate-500">对话过程不会打断你，所有表达将在课后统一总结。</p>
             </div>
-          ) : correctionMode === "immersive" ? (
+          ) : isAnalyzing ? (
             <div className="rounded-2xl border border-violet-100 bg-violet-50 p-5 text-center">
-              <p className="text-sm font-semibold text-brand">当前为沉浸模式</p>
-              <p className="mt-1 text-xs leading-5 text-slate-500">
-                对话过程中不会打断你，用户表达将在课后统一分析。
-              </p>
+              <div className="mx-auto size-6 animate-spin rounded-full border-2 border-violet-200 border-t-violet-600" />
+              <p className="mt-3 text-sm font-semibold text-brand">正在分析表达与语境...</p>
             </div>
-          ) : visibleCorrections.length === 0 ? (
+          ) : visible.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-5 text-center">
-              <p className="text-sm font-medium text-slate-600">暂未发现需要纠正的问题</p>
-              <p className="mt-1 text-xs leading-5 text-slate-400">
-                提交英文文本后，建议会显示在这里。
-              </p>
+              <p className="text-sm font-semibold text-slate-600">暂未发现需要纠正的问题</p>
+              <p className="mt-1 text-xs leading-5 text-slate-400">提交英文回答后，实时建议会显示在这里。</p>
             </div>
           ) : (
-            visibleCorrections.map((item) => (
-              <article
-                className="rounded-2xl border border-amber-100 bg-amber-50 p-4"
-                key={item.id}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-semibold text-amber-800">
-                    {item.errorType}
-                  </p>
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${severityStyles[item.severity]}`}
-                  >
+            visible.map((item) => (
+              <article className="rounded-xl border border-amber-100 bg-amber-50/80 p-3" key={item.id}>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-bold text-amber-800">{item.errorType}</p>
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${severityStyle[item.severity]}`}>
                     {item.severity}
                   </span>
                 </div>
-                <p className="mt-3 text-xs font-semibold text-slate-400">原句</p>
-                <p className="mt-1 text-sm text-slate-500 line-through">
-                  {item.original}
-                </p>
-                <p className="mt-3 text-xs font-semibold text-slate-400">修改</p>
-                <p className="mt-1 text-sm font-medium text-slate-800">
-                  {item.corrected}
-                </p>
-                <p className="mt-3 text-xs leading-5 text-slate-600">
-                  {item.explanation}
-                </p>
-                <div className="mt-3 rounded-xl bg-white/80 p-3">
-                  <p className="text-[11px] font-semibold text-brand">更自然表达</p>
-                  <p className="mt-1 text-xs leading-5 text-slate-700">
-                    {item.betterExpression}
-                  </p>
+                <p className="mt-3 text-sm text-slate-500 line-through">{item.original}</p>
+                <p className="mt-2 text-sm font-bold text-emerald-700">{item.corrected}</p>
+                <p className="mt-2 text-xs leading-5 text-slate-600">{item.explanation}</p>
+                <div className="mt-3 rounded-xl border border-violet-100 bg-white p-3 shadow-sm">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-brand">推荐表达</p>
+                  <p className="mt-1 text-xs font-semibold leading-5 text-slate-700">{item.betterExpression}</p>
                 </div>
               </article>
             ))
           )}
         </div>
       </section>
+      <p className="mt-3 text-[10px] leading-4 text-slate-400">发音分数当前为基于 ASR 文本完整度的清晰度估算。</p>
     </aside>
   );
 }
-
-export default FeedbackPanel;

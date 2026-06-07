@@ -3,6 +3,7 @@ interface RecorderBarProps {
   isActive: boolean;
   isBusy: boolean;
   recording: boolean;
+  elapsedSeconds: number;
   audioBlob: Blob | null;
   audioUrl: string;
   recordingError: string;
@@ -17,138 +18,72 @@ interface RecorderBarProps {
   onTranscribe: () => void;
 }
 
-function RecorderBar({
-  text,
-  isActive,
-  isBusy,
-  recording,
-  audioBlob,
-  audioUrl,
-  recordingError,
-  isTranscribing,
-  transcript,
-  transcriptionError,
-  transcriptionWarning,
-  onTextChange,
-  onAction,
-  onStartRecording,
-  onStopRecording,
-  onTranscribe,
-}: RecorderBarProps) {
-  return (
-    <footer className="rounded-3xl bg-white p-4 shadow-panel">
-      <div className="flex flex-col gap-3 xl:flex-row">
-        <input
-          className="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={!isActive || isBusy || isTranscribing}
-          onChange={(event) => onTextChange(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" && isActive && text.trim() && !isBusy) {
-              onAction("submit-text");
-            }
-          }}
-          placeholder={isActive ? "输入英文回答并提交..." : "请先点击开始练习"}
-          type="text"
-          value={text}
-        />
+function formatTime(seconds: number): string {
+  return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+}
 
-        <div className="flex flex-wrap gap-2">
-          <button
-            className="rounded-2xl bg-brand px-4 py-3 text-xs font-semibold text-white shadow-lg shadow-violet-200 transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-40"
-            disabled={isActive || isBusy}
-            onClick={() => onAction("start-practice")}
-            type="button"
-          >
-            开始练习
-          </button>
-          <button
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-semibold text-slate-600 transition hover:border-violet-200 hover:bg-violet-50 disabled:cursor-not-allowed disabled:opacity-40"
-            disabled={!isActive || isBusy || recording || isTranscribing}
-            onClick={onStartRecording}
-            type="button"
-          >
-            开始录音
-          </button>
-          <button
-            className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-semibold text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40"
-            disabled={!isActive || !recording}
-            onClick={onStopRecording}
-            type="button"
-          >
-            停止录音
-          </button>
-          <button
-            className="rounded-2xl border border-violet-200 bg-violet-50 px-4 py-3 text-xs font-semibold text-brand transition hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-40"
-            disabled={!isActive || !audioBlob || recording || isTranscribing}
-            onClick={onTranscribe}
-            type="button"
-          >
-            {isTranscribing ? "转写中..." : "转写音频"}
-          </button>
-          <button
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-semibold text-slate-600 transition hover:border-violet-200 hover:bg-violet-50 disabled:cursor-not-allowed disabled:opacity-40"
-            disabled={!isActive || !text.trim() || isBusy || isTranscribing}
-            onClick={() => onAction("submit-text")}
-            type="button"
-          >
-            {isBusy ? "回复中..." : "提交文本"}
-          </button>
-          <button
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-semibold text-slate-600 transition hover:border-violet-200 hover:bg-violet-50 disabled:cursor-not-allowed disabled:opacity-40"
-            disabled={!isActive || isBusy || isTranscribing}
-            onClick={() => onAction("end-practice")}
-            type="button"
-          >
-            结束练习
-          </button>
+export default function RecorderBar(props: RecorderBarProps) {
+  const status = props.recording
+    ? `录音 ${formatTime(props.elapsedSeconds)}`
+    : props.isTranscribing
+      ? "转写中"
+      : props.isBusy
+        ? "AI 生成中"
+        : props.isActive
+          ? "练习中"
+          : "待开始";
+  const warning = props.recordingError || props.transcriptionError || props.transcriptionWarning;
+
+  return (
+    <footer className="app-recorder-enter fixed inset-x-3 bottom-3 z-30 mx-auto max-w-[1600px] rounded-2xl border border-white/80 bg-white/95 p-2.5 shadow-2xl shadow-slate-300/60 backdrop-blur-xl">
+      <div className="flex flex-col gap-2 xl:flex-row xl:items-center">
+        <span className={`flex shrink-0 items-center gap-1.5 rounded-xl px-2.5 py-2 text-[11px] font-bold ${
+          props.recording ? "bg-red-50 text-red-600" : props.isBusy || props.isTranscribing ? "bg-violet-50 text-brand" : "bg-emerald-50 text-emerald-700"
+        }`}>
+          <span className={`size-2 rounded-full ${props.recording || props.isBusy || props.isTranscribing ? "animate-pulse" : ""} ${props.recording ? "bg-red-500" : props.isBusy || props.isTranscribing ? "bg-violet-500" : "bg-emerald-500"}`} />
+          {status}
+        </span>
+        <input
+          className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm outline-none transition focus:border-violet-300 focus:bg-white focus:ring-2 focus:ring-violet-50 disabled:opacity-60"
+          disabled={!props.isActive || props.isBusy || props.isTranscribing || props.recording}
+          onChange={(event) => props.onTextChange(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && props.isActive && props.text.trim() && !props.isBusy) props.onAction("submit-text");
+          }}
+          placeholder={props.isActive ? "输入或转写英文回答，按 Enter 提交" : "请先开始练习"}
+          value={props.text}
+        />
+        <div className="flex shrink-0 flex-wrap gap-1.5">
+          <Action label="开始练习" primary disabled={props.isActive || props.isBusy} onClick={() => props.onAction("start-practice")} />
+          <Action label="录音" disabled={!props.isActive || props.isBusy || props.recording || props.isTranscribing} onClick={props.onStartRecording} />
+          <Action label="停止" danger disabled={!props.recording} onClick={props.onStopRecording} />
+          <Action label={props.isTranscribing ? "转写中" : "转写"} disabled={!props.isActive || !props.audioBlob || props.recording || props.isTranscribing || props.isBusy} onClick={props.onTranscribe} />
+          <Action label={props.isBusy ? "生成中" : "提交"} disabled={!props.isActive || !props.text.trim() || props.isBusy || props.isTranscribing || props.recording} onClick={() => props.onAction("submit-text")} />
+          <Action label="结束" disabled={!props.isActive || props.isBusy || props.isTranscribing || props.recording} onClick={() => props.onAction("end-practice")} />
         </div>
       </div>
-
-      {(recording ||
-        audioUrl ||
-        recordingError ||
-        transcript ||
-        transcriptionError ||
-        transcriptionWarning) && (
-        <div className="mt-3 flex flex-col gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-3">
-          {recording && (
-            <div className="flex items-center gap-2 text-sm font-medium text-red-600">
-              <span className="size-2.5 animate-pulse rounded-full bg-red-500" />
-              正在录音...
-            </div>
-          )}
-          {!recording && audioUrl && (
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <audio className="h-9 flex-1" controls src={audioUrl}>
-                您的浏览器不支持音频预览。
-              </audio>
-              <span className="text-xs text-slate-400">
-                已录制{" "}
-                {(audioBlob?.size ?? 0) / 1024 < 1
-                  ? "<1"
-                  : Math.round((audioBlob?.size ?? 0) / 1024)}{" "}
-                KB
-              </span>
-            </div>
-          )}
-          {transcript && (
-            <p className="text-sm text-emerald-700">
-              转写成功：文本已填入输入框，可以继续手动修改。
-            </p>
-          )}
-          {recordingError && (
-            <p className="text-sm text-red-600">{recordingError}</p>
-          )}
-          {transcriptionError && (
-            <p className="text-sm text-red-600">{transcriptionError}</p>
-          )}
-          {transcriptionWarning && (
-            <p className="text-sm text-amber-700">{transcriptionWarning}</p>
-          )}
+      {(warning || props.transcript || (!props.recording && props.audioUrl)) && (
+        <div className="mt-2 flex items-center gap-3 px-1 text-[11px]">
+          {!props.recording && props.audioUrl && <audio className="h-7 max-w-64" controls src={props.audioUrl} />}
+          {props.transcript && <span className="text-emerald-700">转写完成，可编辑后提交。</span>}
+          {warning && <span className="truncate text-amber-700">{warning}</span>}
         </div>
       )}
     </footer>
   );
 }
 
-export default RecorderBar;
+function Action({ label, disabled, onClick, primary, danger }: { label: string; disabled: boolean; onClick: () => void; primary?: boolean; danger?: boolean }) {
+  return (
+    <button
+      className={`rounded-lg border px-3 py-2.5 text-[11px] font-bold transition disabled:cursor-not-allowed disabled:opacity-35 ${
+        primary ? "border-brand bg-brand text-white shadow-md shadow-violet-200" : danger ? "border-red-200 bg-red-50 text-red-600" : "border-slate-200 bg-white text-slate-600 hover:bg-violet-50"
+      }`}
+      disabled={disabled}
+      onClick={onClick}
+      type="button"
+    >
+      {label}
+    </button>
+  );
+}
