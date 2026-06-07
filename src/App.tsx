@@ -6,9 +6,8 @@ import RecorderBar from "./components/RecorderBar";
 import ReportView from "./components/ReportView";
 import ScenarioPanel from "./components/ScenarioPanel";
 import { usePracticeSession } from "./hooks/usePracticeSession";
-import { useRecorder } from "./hooks/useRecorder";
 import { useSpeech } from "./hooks/useSpeech";
-import { useTranscription } from "./hooks/useTranscription";
+import { useVoiceConversation } from "./hooks/useVoiceConversation";
 import HistoryPage from "./pages/HistoryPage";
 import PracticePage from "./pages/PracticePage";
 import type { CorrectionMode, Scenario, ScoreResult } from "./types";
@@ -34,9 +33,18 @@ function App() {
   const [autoSpeak, setAutoSpeak] = useState(true);
   const [showReport, setShowReport] = useState(false);
   const lastSpokenMessageIdRef = useRef("");
-  const { session, isBusy, error: sessionError, startPractice, sendMessage, endPractice } = usePracticeSession();
-  const { recording, audioBlob, audioUrl, error: recordingError, elapsedSeconds, startRecording, stopRecording } = useRecorder();
-  const { isTranscribing, transcript, error: transcriptionError, warning: transcriptionWarning, transcribe, clearTranscript } = useTranscription();
+  const { session, isBusy, error: sessionError, startPractice, sendMessage, endPractice, refreshSession } = usePracticeSession();
+  const isSessionActive = session?.status === "active";
+  const {
+    recording,
+    elapsedSeconds,
+    error: voiceError,
+    isProcessing: isVoiceProcessing,
+    result: voiceResult,
+    startVoiceInput,
+    stopVoiceInputAndSend,
+    stopRecording,
+  } = useVoiceConversation(isSessionActive);
   const { speaking, supported: speechSupported, mode: speechMode, error: speechError, warning: speechWarning, speak, stop: stopSpeaking } = useSpeech();
 
   useEffect(() => {
@@ -57,7 +65,6 @@ function App() {
   }, [session?.scenarioId]);
 
   const selectedScenario = scenarios.find((scenario) => scenario.id === selectedScenarioId);
-  const isSessionActive = session?.status === "active";
   const messages = session?.scenarioId === selectedScenarioId ? session.messages : [];
 
   useEffect(() => {
@@ -77,28 +84,26 @@ function App() {
     if (session?.report) setShowReport(true);
   }, [session?.report]);
 
+  useEffect(() => {
+    if (voiceResult) {
+      void refreshSession();
+    }
+  }, [refreshSession, voiceResult]);
+
   const handleAction = async (action: string) => {
     if (action === "start-practice") {
       setShowReport(false);
-      clearTranscript();
       stopSpeaking();
       await startPractice(selectedScenarioId, correctionMode);
     } else if (action === "submit-text") {
-      if (await sendMessage(inputText, Boolean(transcript))) {
+      if (await sendMessage(inputText, false)) {
         setInputText("");
-        clearTranscript();
       }
     } else if (action === "end-practice") {
       stopSpeaking();
       if (recording) stopRecording();
       await endPractice();
     }
-  };
-
-  const handleTranscribe = async () => {
-    if (!audioBlob) return;
-    const result = await transcribe(audioBlob, { scenarioId: selectedScenarioId });
-    if (result) setInputText(result);
   };
 
   if (page === "history") {
@@ -118,7 +123,7 @@ function App() {
     );
   }
 
-  const status = session?.offlineFallback ? "离线模拟模式" : isSessionActive ? "练习进行中" : "准备就绪";
+  const status = session?.offlineFallback ? "真实服务失败，当前使用模拟兜底" : isSessionActive ? "练习进行中" : "准备就绪";
   const statusTone = session?.offlineFallback ? "offline" : isSessionActive ? "active" : "ready";
 
   return (
@@ -137,7 +142,19 @@ function App() {
                 <ChatPanel autoSpeak={autoSpeak} isBusy={isBusy} messages={messages} onAutoSpeakChange={setAutoSpeak} onSpeakMessage={speak} onStopSpeaking={stopSpeaking} scenario={selectedScenario} speaking={speaking} speechError={speechError} speechMode={speechMode} speechSupported={speechSupported} speechWarning={speechWarning} />
                 <FeedbackPanel correctionMode={session?.correctionMode ?? correctionMode} corrections={session?.corrections ?? []} isAnalyzing={isBusy} score={session?.score ?? initialScore} />
               </section>
-              <RecorderBar audioBlob={audioBlob} audioUrl={audioUrl} elapsedSeconds={elapsedSeconds} isActive={isSessionActive} isBusy={isBusy} isTranscribing={isTranscribing} onAction={(action) => void handleAction(action)} onStartRecording={() => { clearTranscript(); void startRecording(); }} onStopRecording={stopRecording} onTextChange={setInputText} onTranscribe={() => void handleTranscribe()} recording={recording} recordingError={recordingError} text={inputText} transcript={transcript} transcriptionError={transcriptionError} transcriptionWarning={transcriptionWarning} />
+              <RecorderBar
+                elapsedSeconds={elapsedSeconds}
+                isActive={isSessionActive}
+                isBusy={isBusy}
+                isVoiceProcessing={isVoiceProcessing}
+                onAction={(action) => void handleAction(action)}
+                onStartVoiceInput={() => void startVoiceInput()}
+                onStopVoiceInputAndSend={() => void stopVoiceInputAndSend()}
+                onTextChange={setInputText}
+                recording={recording}
+                text={inputText}
+                voiceError={voiceError}
+              />
             </>
           )}
           {sessionError && <p className="app-toast rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">{sessionError}</p>}

@@ -11,6 +11,7 @@ interface UsePracticeSessionResult {
   ) => Promise<void>;
   sendMessage: (text: string, asrSucceeded?: boolean) => Promise<boolean>;
   endPractice: () => Promise<void>;
+  refreshSession: () => Promise<void>;
 }
 
 export function usePracticeSession(): UsePracticeSessionResult {
@@ -82,6 +83,10 @@ export function usePracticeSession(): UsePracticeSessionResult {
     await runAction(() => window.speakCoachAPI.endPractice());
   }, [runAction]);
 
+  const refreshSession = useCallback(async () => {
+    await runAction(() => window.speakCoachAPI.getCurrentSession());
+  }, [runAction]);
+
   return {
     session,
     isBusy,
@@ -89,5 +94,6 @@ export function usePracticeSession(): UsePracticeSessionResult {
     startPractice,
     sendMessage,
     endPractice,
+    refreshSession,
   };
 }

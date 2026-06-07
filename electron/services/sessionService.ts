@@ -95,6 +95,15 @@ export class SessionService {
     return this.cloneSession(this.currentSession);
   }
 
+  clearOfflineFallback(): PracticeSession {
+    if (!this.currentSession) {
+      throw new Error("There is no current practice session.");
+    }
+
+    this.currentSession.offlineFallback = false;
+    return this.cloneSession(this.currentSession);
+  }
+
   getCurrentSession(): PracticeSession | null {
     return this.currentSession ? this.cloneSession(this.currentSession) : null;
   }

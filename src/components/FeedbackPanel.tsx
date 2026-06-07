@@ -70,12 +70,12 @@ export default function FeedbackPanel({
         </div>
       </section>
 
-      <section className="mt-3 min-h-0 flex-1">
+      <section className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-bold">纠错建议</h3>
           {isAnalyzing && activeFeedback && <span className="size-2 animate-pulse rounded-full bg-violet-500" />}
         </div>
-        <div className="mt-2 max-h-[390px] space-y-2 overflow-y-auto pr-1">
+        <div className="mt-2 min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pb-4 pr-1">
           {correctionMode === "immersive" ? (
             <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-violet-50 p-5 text-center">
               <p className="text-sm font-bold text-brand">沉浸模式进行中</p>

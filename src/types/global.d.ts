@@ -4,6 +4,7 @@ import type {
   Scenario,
   HistoryRecord,
   HistorySummary,
+  VoiceReplyResult,
 } from "./index";
 
 declare global {
@@ -35,6 +36,10 @@ declare global {
       }>;
       listHistory: () => Promise<HistorySummary[]>;
       getHistoryDetail: (sessionId: string) => Promise<HistoryRecord | null>;
+      transcribeAndReply: (
+        audioBuffer: ArrayBuffer,
+        meta?: { mimeType?: string },
+      ) => Promise<VoiceReplyResult>;
     };
   }
 }

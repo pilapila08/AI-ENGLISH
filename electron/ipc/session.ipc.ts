@@ -1,18 +1,16 @@
 import { ipcMain } from "electron";
 import type { CorrectionMode } from "../types";
-import { DialogueService } from "../services/dialogueService";
-import { CorrectionService } from "../services/correctionService";
 import { getScenarios } from "../services/scenarioService";
-import { SessionService } from "../services/sessionService";
-import { ScoringService } from "../services/scoringService";
 import { ReportService } from "../services/reportService";
 import { storageService } from "../services/storageService";
+import {
+  correctionService,
+  dialogueService,
+  scoringService,
+  sessionService,
+} from "../services/practiceRuntime";
 import { IPC_CHANNELS } from "./channels";
 
-const sessionService = new SessionService();
-const dialogueService = new DialogueService();
-const correctionService = new CorrectionService();
-const scoringService = new ScoringService();
 const reportService = new ReportService();
 
 export function registerSessionIpc(): void {
@@ -89,6 +87,8 @@ export function registerSessionIpc(): void {
 
     if (assistantReply.fallbackUsed) {
       sessionService.markOfflineFallback();
+    } else if (dialogueService.getMode() === "remote") {
+      sessionService.clearOfflineFallback();
     }
 
     if (corrections.length > 0) {

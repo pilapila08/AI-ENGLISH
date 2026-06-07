@@ -18,6 +18,10 @@ export class ASRService {
     this.mode = selection.mode;
   }
 
+  getMode(): ASRMode {
+    return this.mode;
+  }
+
   async transcribe(audioBuffer: Buffer, meta?: AudioMeta): Promise<string> {
     try {
       return await this.provider.transcribe(audioBuffer, meta);

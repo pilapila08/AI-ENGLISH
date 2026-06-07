@@ -56,7 +56,19 @@ export async function convertAudioBlobToWav(audioBlob: Blob): Promise<Blob> {
   try {
     const sourceBuffer = await audioBlob.arrayBuffer();
     const decodedAudio = await audioContext.decodeAudioData(sourceBuffer.slice(0));
-    return new Blob([encodeWav(decodedAudio)], { type: "audio/wav" });
+    const targetSampleRate = 16_000;
+    const offlineContext = new OfflineAudioContext(
+      1,
+      Math.max(1, Math.ceil(decodedAudio.duration * targetSampleRate)),
+      targetSampleRate,
+    );
+    const source = offlineContext.createBufferSource();
+    source.buffer = decodedAudio;
+    source.connect(offlineContext.destination);
+    source.start();
+    const optimizedAudio = await offlineContext.startRendering();
+
+    return new Blob([encodeWav(optimizedAudio)], { type: "audio/wav" });
   } finally {
     await audioContext.close();
   }

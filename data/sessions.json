@@ -346,5 +346,545 @@
       ],
       "createdAt": "2026-06-07T04:52:24.793Z"
     }
+  },
+  {
+    "sessionId": "9d728a0b-cd65-48ff-82e6-3ebe79cc2afc",
+    "savedAt": "2026-06-07T05:59:03.601Z",
+    "session": {
+      "id": "9d728a0b-cd65-48ff-82e6-3ebe79cc2afc",
+      "scenarioId": "interview",
+      "correctionMode": "strict",
+      "status": "completed",
+      "messages": [
+        {
+          "id": "9a4ed78f-461a-4d3d-a4e4-b8532ef35070",
+          "role": "assistant",
+          "content": "Hello! Thanks for joining us today. Could you start by telling me a little about yourself?",
+          "createdAt": "2026-06-07T05:58:02.674Z"
+        },
+        {
+          "id": "2347bc77-2072-4ec2-89e2-0cc6545722fd",
+          "role": "user",
+          "content": "Hello, my name is Dr. Chau.",
+          "createdAt": "2026-06-07T05:58:11.156Z",
+          "transcript": "Hello, my name is Dr. Chau."
+        },
+        {
+          "id": "ae7239dd-d275-4406-862c-13722a309737",
+          "role": "assistant",
+          "content": "Thanks, Dr. Chau. Could you share more about your professional background and what role you're applying for?",
+          "createdAt": "2026-06-07T05:58:15.070Z"
+        },
+        {
+          "id": "e833d666-7ae8-493d-af51-d8fad6c02445",
+          "role": "user",
+          "content": "uh, I'm good at C plus plus, and I'm a computer engineer.",
+          "createdAt": "2026-06-07T05:58:43.399Z",
+          "transcript": "uh, I'm good at C plus plus, and I'm a computer engineer."
+        },
+        {
+          "id": "3642cec8-3678-479b-85c8-2840a11e8da3",
+          "role": "assistant",
+          "content": "Great, C++ is a valuable skill. Can you tell me about a recent project where you used C++?",
+          "createdAt": "2026-06-07T05:58:46.969Z"
+        }
+      ],
+      "corrections": [
+        {
+          "id": "3231cf6d-8a51-4a84-b460-e30a466c41df",
+          "original": "Hello, my name is Dr. Chau.",
+          "corrected": "Hello, my name is Dr. Chau. I'm a software engineer with five years of experience in full-stack development.",
+          "errorType": "Context · detail",
+          "explanation": "The response is grammatically correct but lacks the professional context expected in a job interview. The interviewer asked for a self-introduction, which should include relevant professional background.",
+          "betterExpression": "Hello, my name is Dr. Chau. I'm a software engineer with five years of experience in full-stack development, specializing in cloud-based applications.",
+          "severity": "high"
+        },
+        {
+          "id": "beec280c-03d9-4b08-8379-d2b9bf87dbfd",
+          "original": "uh, I'm good at C plus plus, and I'm a computer engineer.",
+          "corrected": "I specialize in C++ development and have experience as a computer engineer.",
+          "errorType": "Context · detail",
+          "explanation": "The response is too brief and doesn't connect to the interviewer's question about professional background and the specific role being applied for. It needs more context.",
+          "betterExpression": "I specialize in C++ development and have experience as a computer engineer, which aligns well with the software engineering role I'm applying for.",
+          "severity": "high"
+        },
+        {
+          "id": "de8aaa0c-60a7-49be-b4c7-037f70c95ea9",
+          "original": "uh, I'm good at C plus plus, and I'm a computer engineer.",
+          "corrected": "I have strong proficiency in C++ and work as a computer engineer.",
+          "errorType": "Expression",
+          "explanation": "The phrase 'I'm good at' is informal and vague for a professional interview. 'C plus plus' should be written as 'C++'. The filler word 'uh' should be avoided.",
+          "betterExpression": "I have strong proficiency in C++ and work as a computer engineer.",
+          "severity": "medium"
+        }
+      ],
+      "offlineFallback": false,
+      "startedAt": "2026-06-07T05:58:02.674Z",
+      "score": {
+        "pronunciationScore": 85,
+        "grammarScore": 70,
+        "fluencyScore": 65,
+        "vocabularyScore": 60,
+        "naturalnessScore": 55,
+        "contextAppropriatenessScore": 40,
+        "overallScore": 62
+      },
+      "endedAt": "2026-06-07T05:59:03.599Z",
+      "report": {
+        "id": "3cd0613b-fa72-43ad-ab7e-90ebcd36142f",
+        "sessionId": "9d728a0b-cd65-48ff-82e6-3ebe79cc2afc",
+        "scenarioId": "interview",
+        "scenarioName": "英文面试",
+        "durationSeconds": 61,
+        "dialogueTurns": 2,
+        "scores": {
+          "pronunciationScore": 85,
+          "grammarScore": 70,
+          "fluencyScore": 65,
+          "vocabularyScore": 60,
+          "naturalnessScore": 55,
+          "contextAppropriatenessScore": 40,
+          "overallScore": 62
+        },
+        "strengths": [
+          "发音清晰度估算表现较好，本次得分 85 分。",
+          "语法准确度表现较好，本次得分 70 分。"
+        ],
+        "weaknesses": [
+          "本次发现 3 条可改进表达，建议优先复习典型错误。",
+          "表达自然度仍有提升空间，本次得分 55 分。"
+        ],
+        "corrections": [
+          {
+            "id": "3231cf6d-8a51-4a84-b460-e30a466c41df",
+            "original": "Hello, my name is Dr. Chau.",
+            "corrected": "Hello, my name is Dr. Chau. I'm a software engineer with five years of experience in full-stack development.",
+            "errorType": "Context · detail",
+            "explanation": "The response is grammatically correct but lacks the professional context expected in a job interview. The interviewer asked for a self-introduction, which should include relevant professional background.",
+            "betterExpression": "Hello, my name is Dr. Chau. I'm a software engineer with five years of experience in full-stack development, specializing in cloud-based applications.",
+            "severity": "high"
+          },
+          {
+            "id": "beec280c-03d9-4b08-8379-d2b9bf87dbfd",
+            "original": "uh, I'm good at C plus plus, and I'm a computer engineer.",
+            "corrected": "I specialize in C++ development and have experience as a computer engineer.",
+            "errorType": "Context · detail",
+            "explanation": "The response is too brief and doesn't connect to the interviewer's question about professional background and the specific role being applied for. It needs more context.",
+            "betterExpression": "I specialize in C++ development and have experience as a computer engineer, which aligns well with the software engineering role I'm applying for.",
+            "severity": "high"
+          },
+          {
+            "id": "de8aaa0c-60a7-49be-b4c7-037f70c95ea9",
+            "original": "uh, I'm good at C plus plus, and I'm a computer engineer.",
+            "corrected": "I have strong proficiency in C++ and work as a computer engineer.",
+            "errorType": "Expression",
+            "explanation": "The phrase 'I'm good at' is informal and vague for a professional interview. 'C plus plus' should be written as 'C++'. The filler word 'uh' should be avoided.",
+            "betterExpression": "I have strong proficiency in C++ and work as a computer engineer.",
+            "severity": "medium"
+          }
+        ],
+        "recommendedExpressions": [
+          "Hello, my name is Dr. Chau. I'm a software engineer with five years of experience in full-stack development, specializing in cloud-based applications.",
+          "I specialize in C++ development and have experience as a computer engineer, which aligns well with the software engineering role I'm applying for.",
+          "I have strong proficiency in C++ and work as a computer engineer."
+        ],
+        "nextPracticeSuggestions": [
+          "下一次重点练习语境适切度，尝试连续回答 2-3 句话。",
+          "围绕“interview”场景复用本报告中的推荐表达。",
+          "复习表达自然度相关反馈，并在下一轮对话中主动应用。"
+        ],
+        "studyCards": [
+          {
+            "front": "Hello, my name is Dr. Chau.",
+            "back": "Hello, my name is Dr. Chau. I'm a software engineer with five years of experience in full-stack development.\nThe response is grammatically correct but lacks the professional context expected in a job interview. The interviewer asked for a self-introduction, which should include relevant professional background."
+          },
+          {
+            "front": "uh, I'm good at C plus plus, and I'm a computer engineer.",
+            "back": "I specialize in C++ development and have experience as a computer engineer.\nThe response is too brief and doesn't connect to the interviewer's question about professional background and the specific role being applied for. It needs more context."
+          },
+          {
+            "front": "uh, I'm good at C plus plus, and I'm a computer engineer.",
+            "back": "I have strong proficiency in C++ and work as a computer engineer.\nThe phrase 'I'm good at' is informal and vague for a professional interview. 'C plus plus' should be written as 'C++'. The filler word 'uh' should be avoided."
+          }
+        ],
+        "createdAt": "2026-06-07T05:59:03.600Z"
+      }
+    },
+    "report": {
+      "id": "3cd0613b-fa72-43ad-ab7e-90ebcd36142f",
+      "sessionId": "9d728a0b-cd65-48ff-82e6-3ebe79cc2afc",
+      "scenarioId": "interview",
+      "scenarioName": "英文面试",
+      "durationSeconds": 61,
+      "dialogueTurns": 2,
+      "scores": {
+        "pronunciationScore": 85,
+        "grammarScore": 70,
+        "fluencyScore": 65,
+        "vocabularyScore": 60,
+        "naturalnessScore": 55,
+        "contextAppropriatenessScore": 40,
+        "overallScore": 62
+      },
+      "strengths": [
+        "发音清晰度估算表现较好，本次得分 85 分。",
+        "语法准确度表现较好，本次得分 70 分。"
+      ],
+      "weaknesses": [
+        "本次发现 3 条可改进表达，建议优先复习典型错误。",
+        "表达自然度仍有提升空间，本次得分 55 分。"
+      ],
+      "corrections": [
+        {
+          "id": "3231cf6d-8a51-4a84-b460-e30a466c41df",
+          "original": "Hello, my name is Dr. Chau.",
+          "corrected": "Hello, my name is Dr. Chau. I'm a software engineer with five years of experience in full-stack development.",
+          "errorType": "Context · detail",
+          "explanation": "The response is grammatically correct but lacks the professional context expected in a job interview. The interviewer asked for a self-introduction, which should include relevant professional background.",
+          "betterExpression": "Hello, my name is Dr. Chau. I'm a software engineer with five years of experience in full-stack development, specializing in cloud-based applications.",
+          "severity": "high"
+        },
+        {
+          "id": "beec280c-03d9-4b08-8379-d2b9bf87dbfd",
+          "original": "uh, I'm good at C plus plus, and I'm a computer engineer.",
+          "corrected": "I specialize in C++ development and have experience as a computer engineer.",
+          "errorType": "Context · detail",
+          "explanation": "The response is too brief and doesn't connect to the interviewer's question about professional background and the specific role being applied for. It needs more context.",
+          "betterExpression": "I specialize in C++ development and have experience as a computer engineer, which aligns well with the software engineering role I'm applying for.",
+          "severity": "high"
+        },
+        {
+          "id": "de8aaa0c-60a7-49be-b4c7-037f70c95ea9",
+          "original": "uh, I'm good at C plus plus, and I'm a computer engineer.",
+          "corrected": "I have strong proficiency in C++ and work as a computer engineer.",
+          "errorType": "Expression",
+          "explanation": "The phrase 'I'm good at' is informal and vague for a professional interview. 'C plus plus' should be written as 'C++'. The filler word 'uh' should be avoided.",
+          "betterExpression": "I have strong proficiency in C++ and work as a computer engineer.",
+          "severity": "medium"
+        }
+      ],
+      "recommendedExpressions": [
+        "Hello, my name is Dr. Chau. I'm a software engineer with five years of experience in full-stack development, specializing in cloud-based applications.",
+        "I specialize in C++ development and have experience as a computer engineer, which aligns well with the software engineering role I'm applying for.",
+        "I have strong proficiency in C++ and work as a computer engineer."
+      ],
+      "nextPracticeSuggestions": [
+        "下一次重点练习语境适切度，尝试连续回答 2-3 句话。",
+        "围绕“interview”场景复用本报告中的推荐表达。",
+        "复习表达自然度相关反馈，并在下一轮对话中主动应用。"
+      ],
+      "studyCards": [
+        {
+          "front": "Hello, my name is Dr. Chau.",
+          "back": "Hello, my name is Dr. Chau. I'm a software engineer with five years of experience in full-stack development.\nThe response is grammatically correct but lacks the professional context expected in a job interview. The interviewer asked for a self-introduction, which should include relevant professional background."
+        },
+        {
+          "front": "uh, I'm good at C plus plus, and I'm a computer engineer.",
+          "back": "I specialize in C++ development and have experience as a computer engineer.\nThe response is too brief and doesn't connect to the interviewer's question about professional background and the specific role being applied for. It needs more context."
+        },
+        {
+          "front": "uh, I'm good at C plus plus, and I'm a computer engineer.",
+          "back": "I have strong proficiency in C++ and work as a computer engineer.\nThe phrase 'I'm good at' is informal and vague for a professional interview. 'C plus plus' should be written as 'C++'. The filler word 'uh' should be avoided."
+        }
+      ],
+      "createdAt": "2026-06-07T05:59:03.600Z"
+    }
+  },
+  {
+    "sessionId": "3ef63316-b5cd-40fa-a485-20b5dfc6841e",
+    "savedAt": "2026-06-07T06:03:45.038Z",
+    "session": {
+      "id": "3ef63316-b5cd-40fa-a485-20b5dfc6841e",
+      "scenarioId": "interview",
+      "correctionMode": "strict",
+      "status": "completed",
+      "messages": [
+        {
+          "id": "47d27017-4702-4015-a6a0-d044f08a4b33",
+          "role": "assistant",
+          "content": "Hello! Thanks for joining us today. Could you start by telling me a little about yourself?",
+          "createdAt": "2026-06-07T06:02:54.714Z"
+        },
+        {
+          "id": "8139554f-499e-402d-8ea6-f415d9575362",
+          "role": "user",
+          "content": "1. Yes, my name is Wang, and I come from China.",
+          "createdAt": "2026-06-07T06:03:07.947Z",
+          "transcript": "1. Yes, my name is Wang, and I come from China."
+        },
+        {
+          "id": "2e36225e-bfbe-4b9c-b1c1-3b5277c75c5d",
+          "role": "assistant",
+          "content": "Nice to meet you, Wang! Can you share more about your technical background or current role?",
+          "createdAt": "2026-06-07T06:03:13.689Z"
+        },
+        {
+          "id": "b3775b26-c258-4e11-b3f6-6d5b9c14af6a",
+          "role": "user",
+          "content": "I'm good at C plus plus, and I'm a computer engineer.",
+          "createdAt": "2026-06-07T06:03:31.138Z",
+          "transcript": "I'm good at C plus plus, and I'm a computer engineer."
+        },
+        {
+          "id": "ad1d6797-9b84-49f1-89ab-d51ea9262c62",
+          "role": "assistant",
+          "content": "Great! What specific project have you worked on using C++?",
+          "createdAt": "2026-06-07T06:03:34.785Z"
+        }
+      ],
+      "corrections": [
+        {
+          "id": "2e03c02c-b97e-4da1-9cc2-d0a9b2d68606",
+          "original": "1. Yes, my name is Wang, and I come from China.",
+          "corrected": "My name is Wang, and I'm from China.",
+          "errorType": "Naturalness",
+          "explanation": "The numbered list format ('1.') is unnatural in spoken conversation. In an interview, responses should flow as natural speech.",
+          "betterExpression": "My name is Wang, and I'm from China.",
+          "severity": "high"
+        },
+        {
+          "id": "f745db51-c5ba-4e1e-a50e-7dc3a0274204",
+          "original": "Yes, my name is Wang, and I come from China.",
+          "corrected": "My name is Wang, and I'm from China.",
+          "errorType": "Expression",
+          "explanation": "Starting with 'Yes' is unnatural here as it implies agreement with a previous statement, but the interviewer asked an open-ended question. The phrase 'I come from' is grammatically correct but less common in introductions than 'I'm from'.",
+          "betterExpression": "My name is Wang, and I'm originally from China.",
+          "severity": "medium"
+        },
+        {
+          "id": "593bce4a-f98d-4537-8afe-2168198c1b5a",
+          "original": "I'm good at C plus plus",
+          "corrected": "I'm proficient in C++",
+          "errorType": "Expression",
+          "explanation": "In a technical interview, 'proficient in' is more professional and specific than 'good at'. Also, 'C++' is the standard written form.",
+          "betterExpression": "I'm proficient in C++",
+          "severity": "medium"
+        },
+        {
+          "id": "2be0f7ed-4023-4789-bfc0-9281b88b35e7",
+          "original": "I'm a computer engineer",
+          "corrected": "I'm a software engineer",
+          "errorType": "Context · detail",
+          "explanation": "For a technical role interview, 'software engineer' is more precise and commonly used than 'computer engineer', which can be ambiguous.",
+          "betterExpression": "I'm a software engineer",
+          "severity": "medium"
+        },
+        {
+          "id": "04acf876-bc52-4260-b4e7-5f368d4adfcd",
+          "original": "I'm good at C plus plus, and I'm a computer engineer.",
+          "corrected": "I'm proficient in C++ and currently work as a software engineer.",
+          "errorType": "Naturalness",
+          "explanation": "The sentence is grammatically correct but sounds like two separate facts. Combining them with 'and currently work as' creates a more natural, flowing introduction.",
+          "betterExpression": "I'm proficient in C++ and currently work as a software engineer.",
+          "severity": "low"
+        }
+      ],
+      "offlineFallback": false,
+      "startedAt": "2026-06-07T06:02:54.714Z",
+      "score": {
+        "pronunciationScore": 85,
+        "grammarScore": 70,
+        "fluencyScore": 75,
+        "vocabularyScore": 65,
+        "naturalnessScore": 60,
+        "contextAppropriatenessScore": 70,
+        "overallScore": 71
+      },
+      "endedAt": "2026-06-07T06:03:45.036Z",
+      "report": {
+        "id": "3c59bbf0-411c-4146-b2db-b378f347e6db",
+        "sessionId": "3ef63316-b5cd-40fa-a485-20b5dfc6841e",
+        "scenarioId": "interview",
+        "scenarioName": "英文面试",
+        "durationSeconds": 50,
+        "dialogueTurns": 2,
+        "scores": {
+          "pronunciationScore": 85,
+          "grammarScore": 70,
+          "fluencyScore": 75,
+          "vocabularyScore": 65,
+          "naturalnessScore": 60,
+          "contextAppropriatenessScore": 70,
+          "overallScore": 71
+        },
+        "strengths": [
+          "发音清晰度估算表现较好，本次得分 85 分。",
+          "表达流畅度表现较好，本次得分 75 分。"
+        ],
+        "weaknesses": [
+          "本次发现 5 条可改进表达，建议优先复习典型错误。",
+          "词汇丰富度仍有提升空间，本次得分 65 分。"
+        ],
+        "corrections": [
+          {
+            "id": "2e03c02c-b97e-4da1-9cc2-d0a9b2d68606",
+            "original": "1. Yes, my name is Wang, and I come from China.",
+            "corrected": "My name is Wang, and I'm from China.",
+            "errorType": "Naturalness",
+            "explanation": "The numbered list format ('1.') is unnatural in spoken conversation. In an interview, responses should flow as natural speech.",
+            "betterExpression": "My name is Wang, and I'm from China.",
+            "severity": "high"
+          },
+          {
+            "id": "f745db51-c5ba-4e1e-a50e-7dc3a0274204",
+            "original": "Yes, my name is Wang, and I come from China.",
+            "corrected": "My name is Wang, and I'm from China.",
+            "errorType": "Expression",
+            "explanation": "Starting with 'Yes' is unnatural here as it implies agreement with a previous statement, but the interviewer asked an open-ended question. The phrase 'I come from' is grammatically correct but less common in introductions than 'I'm from'.",
+            "betterExpression": "My name is Wang, and I'm originally from China.",
+            "severity": "medium"
+          },
+          {
+            "id": "593bce4a-f98d-4537-8afe-2168198c1b5a",
+            "original": "I'm good at C plus plus",
+            "corrected": "I'm proficient in C++",
+            "errorType": "Expression",
+            "explanation": "In a technical interview, 'proficient in' is more professional and specific than 'good at'. Also, 'C++' is the standard written form.",
+            "betterExpression": "I'm proficient in C++",
+            "severity": "medium"
+          },
+          {
+            "id": "2be0f7ed-4023-4789-bfc0-9281b88b35e7",
+            "original": "I'm a computer engineer",
+            "corrected": "I'm a software engineer",
+            "errorType": "Context · detail",
+            "explanation": "For a technical role interview, 'software engineer' is more precise and commonly used than 'computer engineer', which can be ambiguous.",
+            "betterExpression": "I'm a software engineer",
+            "severity": "medium"
+          },
+          {
+            "id": "04acf876-bc52-4260-b4e7-5f368d4adfcd",
+            "original": "I'm good at C plus plus, and I'm a computer engineer.",
+            "corrected": "I'm proficient in C++ and currently work as a software engineer.",
+            "errorType": "Naturalness",
+            "explanation": "The sentence is grammatically correct but sounds like two separate facts. Combining them with 'and currently work as' creates a more natural, flowing introduction.",
+            "betterExpression": "I'm proficient in C++ and currently work as a software engineer.",
+            "severity": "low"
+          }
+        ],
+        "recommendedExpressions": [
+          "My name is Wang, and I'm from China.",
+          "My name is Wang, and I'm originally from China.",
+          "I'm proficient in C++"
+        ],
+        "nextPracticeSuggestions": [
+          "下一次重点练习表达自然度，尝试连续回答 2-3 句话。",
+          "围绕“interview”场景复用本报告中的推荐表达。",
+          "复习词汇丰富度相关反馈，并在下一轮对话中主动应用。"
+        ],
+        "studyCards": [
+          {
+            "front": "1. Yes, my name is Wang, and I come from China.",
+            "back": "My name is Wang, and I'm from China.\nThe numbered list format ('1.') is unnatural in spoken conversation. In an interview, responses should flow as natural speech."
+          },
+          {
+            "front": "Yes, my name is Wang, and I come from China.",
+            "back": "My name is Wang, and I'm from China.\nStarting with 'Yes' is unnatural here as it implies agreement with a previous statement, but the interviewer asked an open-ended question. The phrase 'I come from' is grammatically correct but less common in introductions than 'I'm from'."
+          },
+          {
+            "front": "I'm good at C plus plus",
+            "back": "I'm proficient in C++\nIn a technical interview, 'proficient in' is more professional and specific than 'good at'. Also, 'C++' is the standard written form."
+          }
+        ],
+        "createdAt": "2026-06-07T06:03:45.037Z"
+      }
+    },
+    "report": {
+      "id": "3c59bbf0-411c-4146-b2db-b378f347e6db",
+      "sessionId": "3ef63316-b5cd-40fa-a485-20b5dfc6841e",
+      "scenarioId": "interview",
+      "scenarioName": "英文面试",
+      "durationSeconds": 50,
+      "dialogueTurns": 2,
+      "scores": {
+        "pronunciationScore": 85,
+        "grammarScore": 70,
+        "fluencyScore": 75,
+        "vocabularyScore": 65,
+        "naturalnessScore": 60,
+        "contextAppropriatenessScore": 70,
+        "overallScore": 71
+      },
+      "strengths": [
+        "发音清晰度估算表现较好，本次得分 85 分。",
+        "表达流畅度表现较好，本次得分 75 分。"
+      ],
+      "weaknesses": [
+        "本次发现 5 条可改进表达，建议优先复习典型错误。",
+        "词汇丰富度仍有提升空间，本次得分 65 分。"
+      ],
+      "corrections": [
+        {
+          "id": "2e03c02c-b97e-4da1-9cc2-d0a9b2d68606",
+          "original": "1. Yes, my name is Wang, and I come from China.",
+          "corrected": "My name is Wang, and I'm from China.",
+          "errorType": "Naturalness",
+          "explanation": "The numbered list format ('1.') is unnatural in spoken conversation. In an interview, responses should flow as natural speech.",
+          "betterExpression": "My name is Wang, and I'm from China.",
+          "severity": "high"
+        },
+        {
+          "id": "f745db51-c5ba-4e1e-a50e-7dc3a0274204",
+          "original": "Yes, my name is Wang, and I come from China.",
+          "corrected": "My name is Wang, and I'm from China.",
+          "errorType": "Expression",
+          "explanation": "Starting with 'Yes' is unnatural here as it implies agreement with a previous statement, but the interviewer asked an open-ended question. The phrase 'I come from' is grammatically correct but less common in introductions than 'I'm from'.",
+          "betterExpression": "My name is Wang, and I'm originally from China.",
+          "severity": "medium"
+        },
+        {
+          "id": "593bce4a-f98d-4537-8afe-2168198c1b5a",
+          "original": "I'm good at C plus plus",
+          "corrected": "I'm proficient in C++",
+          "errorType": "Expression",
+          "explanation": "In a technical interview, 'proficient in' is more professional and specific than 'good at'. Also, 'C++' is the standard written form.",
+          "betterExpression": "I'm proficient in C++",
+          "severity": "medium"
+        },
+        {
+          "id": "2be0f7ed-4023-4789-bfc0-9281b88b35e7",
+          "original": "I'm a computer engineer",
+          "corrected": "I'm a software engineer",
+          "errorType": "Context · detail",
+          "explanation": "For a technical role interview, 'software engineer' is more precise and commonly used than 'computer engineer', which can be ambiguous.",
+          "betterExpression": "I'm a software engineer",
+          "severity": "medium"
+        },
+        {
+          "id": "04acf876-bc52-4260-b4e7-5f368d4adfcd",
+          "original": "I'm good at C plus plus, and I'm a computer engineer.",
+          "corrected": "I'm proficient in C++ and currently work as a software engineer.",
+          "errorType": "Naturalness",
+          "explanation": "The sentence is grammatically correct but sounds like two separate facts. Combining them with 'and currently work as' creates a more natural, flowing introduction.",
+          "betterExpression": "I'm proficient in C++ and currently work as a software engineer.",
+          "severity": "low"
+        }
+      ],
+      "recommendedExpressions": [
+        "My name is Wang, and I'm from China.",
+        "My name is Wang, and I'm originally from China.",
+        "I'm proficient in C++"
+      ],
+      "nextPracticeSuggestions": [
+        "下一次重点练习表达自然度，尝试连续回答 2-3 句话。",
+        "围绕“interview”场景复用本报告中的推荐表达。",
+        "复习词汇丰富度相关反馈，并在下一轮对话中主动应用。"
+      ],
+      "studyCards": [
+        {
+          "front": "1. Yes, my name is Wang, and I come from China.",
+          "back": "My name is Wang, and I'm from China.\nThe numbered list format ('1.') is unnatural in spoken conversation. In an interview, responses should flow as natural speech."
+        },
+        {
+          "front": "Yes, my name is Wang, and I come from China.",
+          "back": "My name is Wang, and I'm from China.\nStarting with 'Yes' is unnatural here as it implies agreement with a previous statement, but the interviewer asked an open-ended question. The phrase 'I come from' is grammatically correct but less common in introductions than 'I'm from'."
+        },
+        {
+          "front": "I'm good at C plus plus",
+          "back": "I'm proficient in C++\nIn a technical interview, 'proficient in' is more professional and specific than 'good at'. Also, 'C++' is the standard written form."
+        }
+      ],
+      "createdAt": "2026-06-07T06:03:45.037Z"
+    }
   }
 ]

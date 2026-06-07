@@ -28,6 +28,15 @@ export interface ScoreResult {
   overallScore: number;
 }
 
+export interface VoiceReplyResult {
+  userText: string;
+  assistantReply: string;
+  corrections: CorrectionItem[];
+  score?: ScoreResult;
+  fallbackUsed?: boolean;
+  errorMessage?: string;
+}
+
 export interface StudyCard {
   front: string;
   back: string;

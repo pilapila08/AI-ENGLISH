@@ -15,9 +15,12 @@
     "electron/services/scoringService.ts",
     "electron/services/reportService.ts",
     "electron/services/storageService.ts",
+    "electron/services/voiceDialogueService.ts",
+    "electron/services/sessionService.ts",
     "tests/scoringService.test.ts",
     "tests/llmAnalysisServices.test.ts",
     "tests/reportService.test.ts",
-    "tests/storageService.test.ts"
+    "tests/storageService.test.ts",
+    "tests/voiceDialogueService.test.ts"
   ]
 }

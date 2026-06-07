@@ -108,38 +108,88 @@ export class ScoringService {
     scenario: Scenario,
     corrections: CorrectionItem[],
   ): Promise<ScoreResult> {
+    const userMessages = session.messages.filter(
+      (message) => message.role === "user" && message.content.trim(),
+    );
     const dialogue = session.messages
-      .map((message) => `${message.role}: ${message.content}`)
+      .map(
+        (message, index) =>
+          `${index + 1}. ${message.role}: ${message.content.trim() || "(empty)"}`,
+      )
       .join("\n");
     const correctionSummary = corrections
       .map(
         (item) =>
-          `${item.severity} ${item.errorType}: ${item.original} -> ${item.corrected}`,
+          `${item.severity} ${item.errorType}: ${item.original} -> ${item.corrected}; explanation: ${item.explanation}; better expression: ${item.betterExpression}`,
       )
       .join("\n");
+    const userWordCounts = userMessages.map(
+      (message) => getWords(message.content).length,
+    );
+    const totalUserWords = userWordCounts.reduce(
+      (total, count) => total + count,
+      0,
+    );
+    const averageUserWords =
+      userMessages.length === 0 ? 0 : totalUserWords / userMessages.length;
+    const asrMessageCount = userMessages.filter((message) =>
+      Boolean(message.transcript?.trim()),
+    ).length;
     const response = await this.analysisProvider!.analyze([
       {
         role: "system",
         content: [
-          "You are an English speaking assessment engine.",
-          "Score each dimension from 0 to 100 using the scenario, complete conversation, and correction evidence.",
-          "Be consistent and conservative. Context appropriateness measures whether learner responses answer the preceding prompt, fit their role, and advance the scenario goals.",
-          "Pronunciation is only a clarity estimate from ASR transcript availability and completeness; do not claim acoustic analysis.",
-          "Return JSON only:",
+          "You are a rigorous and fair English speaking assessment engine for scenario-based conversation practice.",
+          "Evaluate only the learner's messages. Use the scenario, complete conversation, measurable conversation statistics, and correction evidence supplied by the application.",
+          "",
+          "General scoring rules:",
+          "- Score every dimension with an integer from 0 to 100.",
+          "- Use evidence from the supplied conversation only. Do not invent mistakes, audio qualities, intentions, or vocabulary that are not present.",
+          "- Be consistent and conservative. A score above 90 requires sustained excellent performance, not merely an absence of detected errors.",
+          "- Consider the quantity of evidence. When there are few or very short learner responses, avoid extreme high scores and reflect limited evidence.",
+          "- Repeated instances of the same issue should matter, but should not be penalized as harshly as several different serious issues.",
+          "- Corrections are supporting evidence, not the sole source of truth. Also inspect the conversation directly.",
+          "",
+          "Dimension rubrics:",
+          "1. pronunciationScore: This is only an ASR-based clarity and completeness estimate. Consider whether ASR transcripts exist, whether transcribed responses are complete and intelligible, and whether the text appears fragmented. Do not claim to assess accent, stress, intonation, phonemes, or actual acoustic pronunciation. If no learner message came from ASR, keep this score in a cautious middle range.",
+          "2. grammarScore: Assess grammatical accuracy, sentence structure, tense, agreement, articles, prepositions, word forms, and whether errors obstruct meaning. Minor isolated errors should have limited impact; repeated or meaning-changing errors should have substantial impact.",
+          "3. fluencyScore: Estimate the learner's ability to produce complete, connected, appropriately developed responses across turns. Consider response length, continuity, excessive fragments, repetition, and whether the learner can maintain the exchange. Do not infer speaking speed or pauses that are not provided.",
+          "4. vocabularyScore: Assess range, precision, appropriate scenario vocabulary, collocations, and avoidance of excessive repetition. Reward accurate specific vocabulary more than unnecessarily difficult words.",
+          "5. naturalnessScore: Assess whether expressions sound idiomatic, concise, polite, and natural for spoken English. Penalize awkward literal translations, unnatural phrasing, and register problems while distinguishing them from pure grammar errors.",
+          "6. contextAppropriatenessScore: Assess whether each learner response answers or meaningfully relates to the preceding assistant prompt, fits the learner's assigned role, respects the scenario and register, advances the stated goals, and remains coherent with earlier turns.",
+          "",
+          "Score-band calibration for every dimension:",
+          "- 90-100: consistently excellent, precise, natural, and supported by enough evidence.",
+          "- 80-89: strong performance with only minor or occasional issues.",
+          "- 70-79: generally effective but with noticeable limitations or recurring issues.",
+          "- 60-69: understandable and partially effective, but frequent limitations reduce quality.",
+          "- 40-59: major or repeated problems substantially affect communication, or evidence is very limited.",
+          "- 0-39: communication is mostly ineffective, irrelevant, or unusable.",
+          "",
+          "Return exactly one JSON object and no markdown, explanation, comments, or extra keys:",
           '{"pronunciationScore":0,"grammarScore":0,"fluencyScore":0,"vocabularyScore":0,"naturalnessScore":0,"contextAppropriatenessScore":0}',
         ].join("\n"),
       },
       {
         role: "user",
         content: [
+          "Assessment evidence:",
           `Scenario: ${scenario.name}`,
           `Description: ${scenario.description}`,
           `Learner role: ${scenario.userRole}`,
           `AI role: ${scenario.aiRole}`,
           `Goals: ${scenario.goals.join("; ")}`,
-          `ASR user messages: ${session.messages.filter((message) => message.role === "user" && message.transcript).length}`,
-          `Conversation:\n${dialogue || "(empty)"}`,
-          `Corrections:\n${correctionSummary || "(none)"}`,
+          `Learner turns: ${userMessages.length}`,
+          `Total learner words: ${totalUserWords}`,
+          `Average learner words per turn: ${averageUserWords.toFixed(1)}`,
+          `ASR-transcribed learner turns: ${asrMessageCount} of ${userMessages.length}`,
+          `Detected corrections: ${corrections.length}`,
+          "",
+          `Complete conversation:\n${dialogue || "(empty conversation)"}`,
+          "",
+          `Correction evidence:\n${correctionSummary || "(no corrections detected)"}`,
+          "",
+          "Now score the six dimensions according to the rubric. Return JSON only.",
         ].join("\n"),
       },
     ]);

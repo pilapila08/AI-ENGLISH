@@ -5,6 +5,7 @@ import { registerSessionIpc } from "./ipc/session.ipc";
 import { registerSpeechIpc } from "./ipc/speech.ipc";
 import { registerTTSIpc } from "./ipc/tts.ipc";
 import { registerStorageIpc } from "./ipc/storage.ipc";
+import { registerVoiceIpc } from "./ipc/voice.ipc";
 import { storageService } from "./services/storageService";
 
 const isDevelopment = Boolean(process.env.VITE_DEV_SERVER_URL);
@@ -61,6 +62,7 @@ app.whenReady().then(() => {
   registerSpeechIpc();
   registerTTSIpc();
   registerStorageIpc();
+  registerVoiceIpc();
   createMainWindow();
 
   app.on("activate", () => {

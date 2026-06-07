@@ -19,4 +19,8 @@ contextBridge.exposeInMainWorld("speakCoachAPI", {
   listHistory: () => ipcRenderer.invoke("history:list"),
   getHistoryDetail: (sessionId: string) =>
     ipcRenderer.invoke("history:get-detail", sessionId),
+  transcribeAndReply: (
+    audioBuffer: ArrayBuffer,
+    meta?: { mimeType?: string },
+  ) => ipcRenderer.invoke("voice:transcribe-and-reply", audioBuffer, meta),
 });

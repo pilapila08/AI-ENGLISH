@@ -8,4 +8,5 @@ export const IPC_CHANNELS = {
   speechSynthesize: "speech:synthesize",
   historyList: "history:list",
   historyGetDetail: "history:get-detail",
+  voiceTranscribeAndReply: "voice:transcribe-and-reply",
 } as const;
