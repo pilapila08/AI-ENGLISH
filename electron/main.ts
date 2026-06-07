@@ -1,11 +1,6 @@
 import { app, BrowserWindow } from "electron";
 import path from "node:path";
-import { registerScenarioIpc } from "./ipc/scenario.ipc";
-import { registerSessionIpc } from "./ipc/session.ipc";
-import { registerSpeechIpc } from "./ipc/speech.ipc";
-import { registerTTSIpc } from "./ipc/tts.ipc";
-import { registerStorageIpc } from "./ipc/storage.ipc";
-import { registerVoiceIpc } from "./ipc/voice.ipc";
+import { configService } from "./services/configService";
 import { storageService } from "./services/storageService";
 
 const isDevelopment = Boolean(process.env.VITE_DEV_SERVER_URL);
@@ -77,17 +72,39 @@ function createMainWindow(): void {
   void mainWindow.loadFile(path.join(__dirname, "../dist/index.html"));
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   storageService.setStoragePath(
     path.join(app.getPath("userData"), "data", "sessions.json"),
   );
+  configService.setStoragePath(
+    path.join(app.getPath("userData"), "config", "api-config.json"),
+  );
+  await configService.initialize();
 
+  const [
+    { registerScenarioIpc },
+    { registerSessionIpc },
+    { registerSpeechIpc },
+    { registerTTSIpc },
+    { registerStorageIpc },
+    { registerVoiceIpc },
+    { registerConfigIpc },
+  ] = await Promise.all([
+    import("./ipc/scenario.ipc"),
+    import("./ipc/session.ipc"),
+    import("./ipc/speech.ipc"),
+    import("./ipc/tts.ipc"),
+    import("./ipc/storage.ipc"),
+    import("./ipc/voice.ipc"),
+    import("./ipc/config.ipc"),
+  ]);
   registerScenarioIpc();
   registerSessionIpc();
   registerSpeechIpc();
   registerTTSIpc();
   registerStorageIpc();
   registerVoiceIpc();
+  registerConfigIpc();
   createMainWindow();
 
   app.on("activate", () => {

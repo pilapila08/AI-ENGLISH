@@ -9,4 +9,8 @@ export const IPC_CHANNELS = {
   historyList: "history:list",
   historyGetDetail: "history:get-detail",
   voiceTranscribeAndReply: "voice:transcribe-and-reply",
+  configGetStatus: "config:get-status",
+  configSave: "config:save",
+  configClearSecrets: "config:clear-secrets",
+  configRestart: "config:restart",
 } as const;

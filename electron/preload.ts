@@ -13,6 +13,10 @@ const IPC_CHANNELS = {
   historyList: "history:list",
   historyGetDetail: "history:get-detail",
   voiceTranscribeAndReply: "voice:transcribe-and-reply",
+  configGetStatus: "config:get-status",
+  configSave: "config:save",
+  configClearSecrets: "config:clear-secrets",
+  configRestart: "config:restart",
 } as const;
 
 contextBridge.exposeInMainWorld("speakCoachAPI", {
@@ -50,4 +54,9 @@ contextBridge.exposeInMainWorld("speakCoachAPI", {
     audioBuffer: ArrayBuffer,
     meta?: { mimeType?: string },
   ) => ipcRenderer.invoke(IPC_CHANNELS.voiceTranscribeAndReply, audioBuffer, meta),
+  getApiConfigStatus: () => ipcRenderer.invoke(IPC_CHANNELS.configGetStatus),
+  saveApiConfig: (input: unknown) =>
+    ipcRenderer.invoke(IPC_CHANNELS.configSave, input),
+  clearApiSecrets: () => ipcRenderer.invoke(IPC_CHANNELS.configClearSecrets),
+  restartApp: () => ipcRenderer.invoke(IPC_CHANNELS.configRestart),
 });

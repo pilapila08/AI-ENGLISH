@@ -7,6 +7,8 @@ import type {
   VoiceReplyResult,
   EnglishAccent,
   EnglishTTSVoice,
+  ApiConfigInput,
+  ApiConfigStatus,
 } from "./index";
 
 declare global {
@@ -46,6 +48,10 @@ declare global {
         audioBuffer: ArrayBuffer,
         meta?: { mimeType?: string },
       ) => Promise<VoiceReplyResult>;
+      getApiConfigStatus: () => Promise<ApiConfigStatus>;
+      saveApiConfig: (input: ApiConfigInput) => Promise<ApiConfigStatus>;
+      clearApiSecrets: () => Promise<ApiConfigStatus>;
+      restartApp: () => Promise<void>;
     };
   }
 }

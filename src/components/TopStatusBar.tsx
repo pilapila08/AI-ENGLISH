@@ -11,6 +11,7 @@ interface TopStatusBarProps {
   speaking: boolean;
   onAutoSpeakChange: (enabled: boolean) => void;
   onNavigate: (page: "practice" | "history") => void;
+  onOpenConfig: () => void;
 }
 
 export default function TopStatusBar(props: TopStatusBarProps) {
@@ -59,6 +60,13 @@ export default function TopStatusBar(props: TopStatusBarProps) {
       </div>
 
       <div className="flex shrink-0 items-center gap-2">
+        <button
+          className="rounded-full border border-cyan-300/15 bg-cyan-300/[0.05] px-3 py-1.5 text-[10px] font-bold text-cyan-100 transition hover:border-cyan-300/30 hover:bg-cyan-300/[0.1]"
+          onClick={props.onOpenConfig}
+          type="button"
+        >
+          API 配置
+        </button>
         <label className="flex cursor-pointer items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-bold text-slate-300 transition hover:border-cyan-300/25 hover:bg-cyan-300/[0.06]">
           <input
             checked={props.autoSpeak}

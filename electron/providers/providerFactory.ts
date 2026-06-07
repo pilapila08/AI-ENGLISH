@@ -65,7 +65,9 @@ export function createASRProvider(): ASRProviderSelection {
 
   if (providerName === "mimo") {
     const apiKey =
-      process.env.MIMO_ASR_API_KEY?.trim() || process.env.OPENAI_API_KEY?.trim();
+      process.env.MIMO_ASR_API_KEY?.trim() ||
+      process.env.MIMO_API_KEY?.trim() ||
+      process.env.OPENAI_API_KEY?.trim();
 
     if (!apiKey) {
       console.warn(

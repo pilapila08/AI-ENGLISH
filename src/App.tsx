@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import CoachFeedbackPanel from "./components/CoachFeedbackPanel";
+import ApiConfigPanel from "./components/ApiConfigPanel";
 import ImmersiveChat from "./components/ImmersiveChat";
 import ReportView from "./components/ReportView";
 import ScenarioDock from "./components/ScenarioDock";
@@ -40,6 +41,7 @@ function App() {
   const [speechAccent, setSpeechAccent] = useState<EnglishAccent>("neutral");
   const [speechVoice, setSpeechVoice] = useState<EnglishTTSVoice>("Chloe");
   const [showReport, setShowReport] = useState(false);
+  const [showApiConfig, setShowApiConfig] = useState(false);
   const lastSpokenMessageIdRef = useRef("");
   const {
     session,
@@ -162,11 +164,15 @@ function App() {
 
   if (page === "history") {
     return (
-      <HistoryPage
-        autoSpeak={autoSpeak}
-        onAutoSpeakChange={setAutoSpeak}
-        onNavigate={setPage}
-      />
+      <>
+        <HistoryPage
+          autoSpeak={autoSpeak}
+          onAutoSpeakChange={setAutoSpeak}
+          onNavigate={setPage}
+          onOpenConfig={() => setShowApiConfig(true)}
+        />
+        <ApiConfigPanel open={showApiConfig} onClose={() => setShowApiConfig(false)} />
+      </>
     );
   }
 
@@ -205,6 +211,7 @@ function App() {
           offlineFallback={Boolean(session?.offlineFallback)}
           onAutoSpeakChange={setAutoSpeak}
           onNavigate={setPage}
+          onOpenConfig={() => setShowApiConfig(true)}
           page="practice"
           practiceStatus={practiceStatus}
           scenarioName={selectedScenario.name}
@@ -286,6 +293,7 @@ function App() {
           )}
         </div>
       </main>
+      <ApiConfigPanel open={showApiConfig} onClose={() => setShowApiConfig(false)} />
     </PracticePage>
   );
 }

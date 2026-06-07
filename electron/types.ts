@@ -88,3 +88,23 @@ export interface HistorySummary {
   overallScore: number;
   dialogueTurns: number;
 }
+
+export type ApiProviderPreset =
+  | "offline"
+  | "openai"
+  | "mimo"
+  | "deepseek"
+  | "qwen";
+
+export interface ApiConfigInput {
+  provider: ApiProviderPreset;
+  apiKey?: string;
+}
+
+export interface ApiConfigStatus {
+  source: "env" | "local" | "none";
+  provider: ApiProviderPreset;
+  configured: boolean;
+  storageProtected: boolean;
+  capabilities: string[];
+}

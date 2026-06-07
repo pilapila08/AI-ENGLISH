@@ -10,6 +10,7 @@ interface HistoryPageProps {
   onNavigate: (page: "practice" | "history") => void;
   autoSpeak: boolean;
   onAutoSpeakChange: (enabled: boolean) => void;
+  onOpenConfig: () => void;
 }
 
 function formatDate(value: string): string {
@@ -63,6 +64,7 @@ export default function HistoryPage(props: HistoryPageProps) {
           offlineFallback={false}
           onAutoSpeakChange={props.onAutoSpeakChange}
           onNavigate={props.onNavigate}
+          onOpenConfig={props.onOpenConfig}
           page="history"
           practiceStatus="completed"
           scenarioName={`${history.length} 份报告`}
