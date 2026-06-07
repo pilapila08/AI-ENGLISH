@@ -30,14 +30,41 @@ function createMainWindow(): void {
     },
   });
   mainWindow.webContents.setAudioMuted(false);
+  mainWindow.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  mainWindow.webContents.on("will-navigate", (event, url) => {
+    const trusted =
+      (isDevelopment &&
+        Boolean(
+          process.env.VITE_DEV_SERVER_URL &&
+            url.startsWith(process.env.VITE_DEV_SERVER_URL),
+        )) ||
+      (!isDevelopment && url.startsWith("file://"));
+
+    if (!trusted) {
+      event.preventDefault();
+    }
+  });
 
   mainWindow.webContents.session.setPermissionCheckHandler(
-    (webContents, permission) =>
-      permission === "media" && webContents === mainWindow.webContents,
+    (webContents, permission, requestingOrigin, details) =>
+      permission === "media" &&
+      webContents === mainWindow.webContents &&
+      details.mediaType === "audio" &&
+      (requestingOrigin.startsWith("file://") ||
+        Boolean(
+          process.env.VITE_DEV_SERVER_URL &&
+            requestingOrigin.startsWith(process.env.VITE_DEV_SERVER_URL),
+        )),
   );
   mainWindow.webContents.session.setPermissionRequestHandler(
-    (webContents, permission, callback) => {
-      callback(permission === "media" && webContents === mainWindow.webContents);
+    (webContents, permission, callback, details) => {
+      callback(
+        permission === "media" &&
+          webContents === mainWindow.webContents &&
+          "mediaTypes" in details &&
+          details.mediaTypes?.every((mediaType: string) => mediaType === "audio") ===
+            true,
+      );
     },
   );
 
@@ -51,11 +78,9 @@ function createMainWindow(): void {
 }
 
 app.whenReady().then(() => {
-  if (app.isPackaged) {
-    storageService.setStoragePath(
-      path.join(app.getPath("userData"), "data", "sessions.json"),
-    );
-  }
+  storageService.setStoragePath(
+    path.join(app.getPath("userData"), "data", "sessions.json"),
+  );
 
   registerScenarioIpc();
   registerSessionIpc();

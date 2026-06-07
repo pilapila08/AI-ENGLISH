@@ -1,43 +1,32 @@
 import { ipcMain } from "electron";
-import { ASRService } from "../services/asrService";
 import {
-  correctionService,
-  dialogueService,
-  scoringService,
+  asrService,
+  practiceTurnService,
   sessionService,
 } from "../services/practiceRuntime";
 import { VoiceDialogueService } from "../services/voiceDialogueService";
 import type { VoiceReplyResult } from "../types";
 import { IPC_CHANNELS } from "./channels";
+import { assertTrustedSender, toAudioBuffer } from "./validation";
 
 const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
 const voiceDialogueService = new VoiceDialogueService({
-  asrService: new ASRService(),
+  asrService,
   sessionService,
-  dialogueService,
-  correctionService,
-  scoringService,
+  turnService: practiceTurnService,
 });
 
 export function registerVoiceIpc(): void {
   ipcMain.handle(
     IPC_CHANNELS.voiceTranscribeAndReply,
     async (
-      _event,
+      event,
       audioData: ArrayBuffer | Uint8Array,
       meta?: { mimeType?: string },
     ): Promise<VoiceReplyResult> => {
       try {
-        const audioBuffer = Buffer.from(audioData);
-
-        if (audioBuffer.length === 0) {
-          throw new Error("录音内容为空，请重新录音。");
-        }
-
-        if (audioBuffer.length > MAX_AUDIO_BYTES) {
-          throw new Error("录音文件超过 25 MB 限制。");
-        }
-
+        assertTrustedSender(event);
+        const audioBuffer = toAudioBuffer(audioData, MAX_AUDIO_BYTES);
         return await voiceDialogueService.handleVoiceInput(audioBuffer, meta);
       } catch (error) {
         console.error("[VoiceIPC] Voice conversation failed:", error);

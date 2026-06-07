@@ -1,28 +1,21 @@
 import { ipcMain } from "electron";
-import { ASRService } from "../services/asrService";
+import { asrService } from "../services/practiceRuntime";
 import { IPC_CHANNELS } from "./channels";
+import { assertTrustedSender, toAudioBuffer } from "./validation";
 
-const asrService = new ASRService();
 const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
 
 export function registerSpeechIpc(): void {
   ipcMain.handle(
     IPC_CHANNELS.speechTranscribe,
     async (
-      _event,
+      event,
       audioData: ArrayBuffer | Uint8Array,
       meta?: { mimeType?: string; scenarioId?: string },
     ) => {
       try {
-        const audioBuffer = Buffer.from(audioData);
-
-        if (audioBuffer.length === 0) {
-          throw new Error("Audio data is empty.");
-        }
-
-        if (audioBuffer.length > MAX_AUDIO_BYTES) {
-          throw new Error("Audio data exceeds the 25 MB limit.");
-        }
+        assertTrustedSender(event);
+        const audioBuffer = toAudioBuffer(audioData, MAX_AUDIO_BYTES);
 
         return await asrService.transcribe(audioBuffer, meta);
       } catch (error) {

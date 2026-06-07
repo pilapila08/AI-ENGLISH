@@ -16,6 +16,9 @@ export class TTSService {
   private mode: TTSMode;
   private readonly cache = new Map<string, TTSSynthesisResult>();
   private readonly maxCacheEntries = 50;
+  private readonly maxConcurrentRequests = 3;
+  private activeRequests = 0;
+  private readonly requestWaiters: Array<() => void> = [];
 
   constructor() {
     const selection = createTTSProvider();
@@ -50,6 +53,7 @@ export class TTSService {
     }
 
     try {
+      await this.acquireRequestSlot();
       const audio = await this.provider.synthesize(text, options);
       const result: TTSSynthesisResult = {
         audioData: new Uint8Array(audio.audioBuffer),
@@ -77,7 +81,27 @@ export class TTSService {
           error instanceof Error ? error.message : String(error)
         }`,
       };
+    } finally {
+      this.releaseRequestSlot();
     }
   }
 
+  private async acquireRequestSlot(): Promise<void> {
+    if (this.activeRequests < this.maxConcurrentRequests) {
+      this.activeRequests += 1;
+      return;
+    }
+
+    await new Promise<void>((resolve) => this.requestWaiters.push(resolve));
+    this.activeRequests += 1;
+  }
+
+  private releaseRequestSlot(): void {
+    if (this.activeRequests === 0) {
+      return;
+    }
+
+    this.activeRequests -= 1;
+    this.requestWaiters.shift()?.();
+  }
 }

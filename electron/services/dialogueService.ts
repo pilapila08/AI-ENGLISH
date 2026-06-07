@@ -13,17 +13,24 @@ export interface DialogueReply {
 }
 
 export class DialogueService {
-  private provider: LLMProvider;
+  private readonly primaryProvider: LLMProvider;
+  private readonly primaryMode: Exclude<LLMMode, "fallback">;
   private mode: LLMMode;
   private readonly mockProvider = new MockLLMProvider();
+  private fallbackUntil = 0;
+  private readonly fallbackCooldownMs = 30_000;
 
   constructor() {
     const selection = createLLMProvider();
-    this.provider = selection.provider;
+    this.primaryProvider = selection.provider;
+    this.primaryMode = selection.mode;
     this.mode = selection.mode;
   }
 
   getMode(): LLMMode {
+    if (this.primaryMode === "remote" && Date.now() >= this.fallbackUntil) {
+      return "remote";
+    }
     return this.mode;
   }
 
@@ -32,16 +39,38 @@ export class DialogueService {
     history: ChatMessage[],
     userInput: string,
   ): Promise<DialogueReply> {
+    if (this.primaryMode === "mock") {
+      const content = await this.primaryProvider.chat({
+        scenario,
+        history,
+        userInput,
+      });
+      return { content, fallbackUsed: true };
+    }
+
+    if (Date.now() < this.fallbackUntil) {
+      return {
+        content: await this.mockProvider.chat({ scenario, history, userInput }),
+        fallbackUsed: true,
+      };
+    }
+
     try {
-      const content = await this.provider.chat({ scenario, history, userInput });
-      return { content, fallbackUsed: this.mode === "fallback" };
+      const content = await this.primaryProvider.chat({
+        scenario,
+        history,
+        userInput,
+      });
+      this.mode = "remote";
+      this.fallbackUntil = 0;
+      return { content, fallbackUsed: false };
     } catch (error) {
       console.warn(
-        "[DialogueService] Remote LLM failed. Switching to MockLLMProvider.",
+        "[DialogueService] Remote LLM failed. Using temporary Mock fallback.",
         error,
       );
-      this.provider = this.mockProvider;
       this.mode = "fallback";
+      this.fallbackUntil = Date.now() + this.fallbackCooldownMs;
 
       return {
         content: await this.mockProvider.chat({ scenario, history, userInput }),

@@ -11,6 +11,16 @@ import type { Scenario } from "./scenarioService";
 
 export class SessionService {
   private currentSession: PracticeSession | null = null;
+  private operationTail: Promise<void> = Promise.resolve();
+
+  runExclusive<T>(operation: () => Promise<T>): Promise<T> {
+    const result = this.operationTail.then(operation, operation);
+    this.operationTail = result.then(
+      () => undefined,
+      () => undefined,
+    );
+    return result;
+  }
 
   createSession(
     scenario: Scenario,

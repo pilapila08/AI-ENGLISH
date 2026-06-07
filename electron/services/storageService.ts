@@ -9,6 +9,7 @@ import type {
 
 export class StorageService {
   private filePath: string;
+  private writeTail: Promise<void> = Promise.resolve();
 
   constructor(filePath = path.resolve(process.cwd(), "data", "sessions.json")) {
     this.filePath = filePath;
@@ -26,22 +27,28 @@ export class StorageService {
     session: PracticeSession,
     report: PracticeReport,
   ): Promise<void> {
-    const records = await this.readRecords();
-    const record: HistoryRecord = {
-      sessionId: session.id,
-      savedAt: new Date().toISOString(),
-      session: this.cloneSession(session),
-      report: this.cloneReport(report),
-    };
-    const existingIndex = records.findIndex((item) => item.sessionId === session.id);
+    const operation = this.writeTail.then(async () => {
+      const records = await this.readRecords();
+      const record: HistoryRecord = {
+        sessionId: session.id,
+        savedAt: new Date().toISOString(),
+        session: this.cloneSession(session),
+        report: this.cloneReport(report),
+      };
+      const existingIndex = records.findIndex(
+        (item) => item.sessionId === session.id,
+      );
 
-    if (existingIndex >= 0) {
-      records[existingIndex] = record;
-    } else {
-      records.push(record);
-    }
+      if (existingIndex >= 0) {
+        records[existingIndex] = record;
+      } else {
+        records.push(record);
+      }
 
-    await this.writeRecords(records);
+      await this.writeRecords(records);
+    });
+    this.writeTail = operation.catch(() => undefined);
+    return operation;
   }
 
   async listHistory(): Promise<HistorySummary[]> {
@@ -82,11 +89,24 @@ export class StorageService {
     } catch (error) {
       const code = (error as NodeJS.ErrnoException).code;
 
-      if (code !== "ENOENT" && !(error instanceof SyntaxError)) {
+      if (error instanceof SyntaxError) {
+        await this.backupDamagedFile();
+      } else if (code !== "ENOENT") {
         console.warn("[StorageService] Failed to read history; using empty history.", error);
       }
 
       return [];
+    }
+  }
+
+  private async backupDamagedFile(): Promise<void> {
+    const backupPath = `${this.filePath}.corrupted-${Date.now()}.json`;
+
+    try {
+      await rename(this.filePath, backupPath);
+      console.warn(`[StorageService] Damaged history moved to ${backupPath}.`);
+    } catch (error) {
+      console.warn("[StorageService] Failed to back up damaged history.", error);
     }
   }
 

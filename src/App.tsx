@@ -76,10 +76,10 @@ function App() {
   const messages = session?.scenarioId === selectedScenarioId ? session.messages : [];
 
   useEffect(() => {
-    if (!selectedScenario?.openingMessage) return;
+    if (!autoSpeak || !selectedScenario?.openingMessage) return;
     const chunks = selectedScenario.openingMessage.match(/[^.!?]+[.!?]+|[^.!?]+$/g)?.map((part) => part.trim()).filter(Boolean) ?? [];
     void Promise.all(chunks.map((chunk) => window.speakCoachAPI.synthesizeSpeech(chunk, { accent: speechAccent, voice: speechVoice }).catch((error) => console.warn("[TTS] Prewarm failed:", error))));
-  }, [selectedScenario?.id, selectedScenario?.openingMessage, speechAccent, speechVoice]);
+  }, [autoSpeak, selectedScenario?.id, selectedScenario?.openingMessage, speechAccent, speechVoice]);
 
   useEffect(() => {
     const lastMessage = messages.at(-1);

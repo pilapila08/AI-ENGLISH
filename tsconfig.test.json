@@ -16,6 +16,7 @@
     "electron/services/reportService.ts",
     "electron/services/storageService.ts",
     "electron/services/voiceDialogueService.ts",
+    "electron/services/practiceTurnService.ts",
     "electron/services/sessionService.ts",
     "tests/scoringService.test.ts",
     "tests/llmAnalysisServices.test.ts",

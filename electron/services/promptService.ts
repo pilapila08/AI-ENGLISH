@@ -17,7 +17,7 @@ export class PromptService {
 
     const messages: LLMMessage[] = [
       { role: "system", content: systemPrompt },
-      ...history.map((message) => ({
+      ...history.slice(-20).map((message) => ({
         role: message.role,
         content: message.content,
       })),

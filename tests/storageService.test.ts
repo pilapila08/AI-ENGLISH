@@ -84,3 +84,24 @@ test("missing or damaged JSON falls back to empty history", async () => {
   assert.deepEqual(await service.listHistory(), []);
   await rm(directory, { recursive: true, force: true });
 });
+
+test("concurrent saves do not overwrite each other", async () => {
+  const directory = path.resolve("dist-tests", "storage-concurrent-test");
+  const filePath = path.join(directory, "sessions.json");
+  const service = new StorageService(filePath);
+  const first = createRecord();
+  const second = createRecord();
+  second.session.id = "session-storage-2";
+  second.report.id = "report-storage-2";
+  second.report.sessionId = second.session.id;
+
+  await rm(directory, { recursive: true, force: true });
+  await Promise.all([
+    service.saveSession(first.session, first.report),
+    service.saveSession(second.session, second.report),
+  ]);
+
+  const history = await service.listHistory();
+  assert.equal(history.length, 2);
+  await rm(directory, { recursive: true, force: true });
+});
