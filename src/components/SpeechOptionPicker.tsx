@@ -18,19 +18,19 @@ interface SpeechOptionPickerProps<T extends string> {
 
 const tones = {
   violet: {
-    border: "border-violet-200 hover:border-violet-400",
+    border: "border-violet-300/15 hover:border-violet-300/35",
     icon: "from-violet-600 to-indigo-500",
-    label: "text-violet-500",
-    ring: "border-violet-300 bg-violet-50 text-violet-700",
-    selected: "border-violet-200 bg-violet-50/90",
+    label: "text-violet-300",
+    ring: "border-violet-300/20 bg-violet-400/10 text-violet-200",
+    selected: "border-violet-300/20 bg-violet-400/10",
     dot: "bg-violet-600",
   },
   cyan: {
-    border: "border-cyan-200 hover:border-cyan-400",
+    border: "border-cyan-300/15 hover:border-cyan-300/35",
     icon: "from-cyan-500 to-blue-600",
-    label: "text-cyan-600",
-    ring: "border-cyan-300 bg-cyan-50 text-cyan-700",
-    selected: "border-cyan-200 bg-cyan-50/90",
+    label: "text-cyan-300",
+    ring: "border-cyan-300/20 bg-cyan-400/10 text-cyan-200",
+    selected: "border-cyan-300/20 bg-cyan-400/10",
     dot: "bg-cyan-600",
   },
 } as const;
@@ -69,7 +69,7 @@ export default function SpeechOptionPicker<T extends string>(
     <div className="relative min-w-0" ref={rootRef}>
       <button
         aria-expanded={open}
-        className={`group flex w-full items-center gap-2.5 rounded-xl border bg-white/95 px-3 py-2 text-left shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${tone.border} ${open ? "ring-2 ring-white shadow-md" : ""}`}
+        className={`group flex w-full items-center gap-2.5 rounded-xl border bg-white/[0.025] px-3 py-2 text-left transition duration-200 hover:-translate-y-0.5 hover:bg-white/[0.045] ${tone.border} ${open ? "bg-white/[0.05] shadow-[0_0_18px_rgba(34,211,238,0.08)]" : ""}`}
         onClick={() => setOpen((current) => !current)}
         type="button"
       >
@@ -85,7 +85,7 @@ export default function SpeechOptionPicker<T extends string>(
             {props.label}
           </span>
           <span className="mt-0.5 flex items-center gap-1.5">
-            <span className="truncate text-xs font-black text-slate-800">
+            <span className="truncate text-xs font-black text-slate-100">
               {selected.label}
             </span>
             {selected.badge && (
@@ -98,7 +98,7 @@ export default function SpeechOptionPicker<T extends string>(
           </span>
         </span>
         <span
-          className={`text-sm font-bold text-slate-400 transition-transform duration-200 ${open ? "rotate-180 text-slate-700" : ""}`}
+          className={`text-sm font-bold text-slate-500 transition-transform duration-200 ${open ? "rotate-180 text-cyan-200" : ""}`}
         >
           ▾
         </span>
@@ -106,14 +106,14 @@ export default function SpeechOptionPicker<T extends string>(
 
       <div
         aria-hidden={!open}
-        className={`speech-picker-menu absolute left-0 right-0 top-[calc(100%+8px)] z-40 origin-top overflow-hidden rounded-2xl border border-white/90 bg-white/95 p-1.5 shadow-[0_20px_50px_-18px_rgba(23,32,51,0.5)] backdrop-blur-xl ${open ? "speech-picker-menu-open" : "speech-picker-menu-closed"}`}
+        className={`speech-picker-menu absolute left-0 right-0 top-[calc(100%+8px)] z-40 origin-top overflow-hidden rounded-2xl border border-white/10 bg-[#0b1020]/95 p-1.5 shadow-[0_20px_50px_-18px_rgba(0,0,0,0.8)] backdrop-blur-xl ${open ? "speech-picker-menu-open" : "speech-picker-menu-closed"}`}
       >
         <div className="max-h-64 space-y-1 overflow-y-auto p-0.5">
           {props.options.map((option) => {
             const isSelected = option.value === props.value;
             return (
               <button
-                className={`flex w-full items-center gap-2.5 rounded-xl border px-2.5 py-2 text-left transition duration-150 hover:translate-x-0.5 hover:border-slate-200 hover:bg-slate-50 ${isSelected ? tone.selected : "border-transparent"}`}
+                className={`flex w-full items-center gap-2.5 rounded-xl border px-2.5 py-2 text-left transition duration-150 hover:translate-x-0.5 hover:border-white/10 hover:bg-white/[0.04] ${isSelected ? tone.selected : "border-transparent"}`}
                 key={option.value}
                 onClick={() => {
                   props.onChange(option.value);
@@ -126,11 +126,11 @@ export default function SpeechOptionPicker<T extends string>(
                 />
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-1.5">
-                    <span className="text-xs font-black text-slate-800">
+                    <span className="text-xs font-black text-slate-100">
                       {option.label}
                     </span>
                     {option.badge && (
-                      <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[9px] font-bold text-slate-500">
+                      <span className="rounded-full bg-white/[0.06] px-1.5 py-0.5 text-[9px] font-bold text-slate-400">
                         {option.badge}
                       </span>
                     )}
