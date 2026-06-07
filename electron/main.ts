@@ -4,6 +4,8 @@ import { registerScenarioIpc } from "./ipc/scenario.ipc";
 import { registerSessionIpc } from "./ipc/session.ipc";
 import { registerSpeechIpc } from "./ipc/speech.ipc";
 import { registerTTSIpc } from "./ipc/tts.ipc";
+import { registerStorageIpc } from "./ipc/storage.ipc";
+import { storageService } from "./services/storageService";
 
 const isDevelopment = Boolean(process.env.VITE_DEV_SERVER_URL);
 
@@ -48,10 +50,17 @@ function createMainWindow(): void {
 }
 
 app.whenReady().then(() => {
+  if (app.isPackaged) {
+    storageService.setStoragePath(
+      path.join(app.getPath("userData"), "data", "sessions.json"),
+    );
+  }
+
   registerScenarioIpc();
   registerSessionIpc();
   registerSpeechIpc();
   registerTTSIpc();
+  registerStorageIpc();
   createMainWindow();
 
   app.on("activate", () => {

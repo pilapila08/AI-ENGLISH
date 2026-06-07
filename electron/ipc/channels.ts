@@ -6,4 +6,6 @@ export const IPC_CHANNELS = {
   practiceGetCurrent: "practice:get-current",
   speechTranscribe: "speech:transcribe",
   speechSynthesize: "speech:synthesize",
+  historyList: "history:list",
+  historyGetDetail: "history:get-detail",
 } as const;

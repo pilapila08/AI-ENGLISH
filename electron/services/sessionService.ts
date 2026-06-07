@@ -77,6 +77,15 @@ export class SessionService {
     return this.cloneSession(this.currentSession);
   }
 
+  updateStorageWarning(warning?: string): PracticeSession {
+    if (!this.currentSession) {
+      throw new Error("There is no current practice session.");
+    }
+
+    this.currentSession.storageWarning = warning;
+    return this.cloneSession(this.currentSession);
+  }
+
   markOfflineFallback(): PracticeSession {
     if (!this.currentSession) {
       throw new Error("There is no current practice session.");

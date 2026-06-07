@@ -1,0 +1,191 @@
+[
+  {
+    "sessionId": "f7c017d8-eaf7-48ce-bca1-2e72d885464a",
+    "savedAt": "2026-06-07T03:55:20.756Z",
+    "session": {
+      "id": "f7c017d8-eaf7-48ce-bca1-2e72d885464a",
+      "scenarioId": "interview",
+      "correctionMode": "gentle",
+      "status": "completed",
+      "messages": [
+        {
+          "id": "ff3ffea1-53f4-4bbf-ad20-657aad5b1cc8",
+          "role": "assistant",
+          "content": "Hello! Thanks for joining us today. Could you start by telling me a little about yourself?",
+          "createdAt": "2026-06-07T03:54:29.688Z"
+        },
+        {
+          "id": "efa20f73-4d99-458d-b60e-87cfbe5c9ee6",
+          "role": "user",
+          "content": "My name is Bob.",
+          "createdAt": "2026-06-07T03:54:42.848Z",
+          "transcript": "My name is Bob."
+        },
+        {
+          "id": "eba09e5a-e046-4a29-a04a-f52adafa8805",
+          "role": "assistant",
+          "content": "Nice to meet you, Bob. Could you tell me more about your technical background and current role?",
+          "createdAt": "2026-06-07T03:54:45.375Z"
+        },
+        {
+          "id": "ab17735e-8256-4404-bf94-1b805701f52b",
+          "role": "user",
+          "content": "1, I good at computer software engineering work, and I'm current, uh, computer science scientist.",
+          "createdAt": "2026-06-07T03:55:12.160Z",
+          "transcript": "1, I good at computer software engineering work, and I'm current, uh, computer science scientist."
+        },
+        {
+          "id": "7e7ad9d8-2f5d-4a88-a5cb-10bed516e4ea",
+          "role": "assistant",
+          "content": "Thanks for sharing. Could you describe a recent project where you applied your software engineering skills?",
+          "createdAt": "2026-06-07T03:55:14.993Z"
+        }
+      ],
+      "corrections": [
+        {
+          "id": "4198f8b4-66e3-4744-8ae1-67a8dda1f4a0",
+          "original": "I good at computer software engineering work",
+          "corrected": "I am good at computer software engineering",
+          "errorType": "Grammar",
+          "explanation": "The verb 'am' is missing after 'I'. Also, 'work' is unnecessary here as 'computer software engineering' is sufficient.",
+          "betterExpression": "I am proficient in computer software engineering",
+          "severity": "medium"
+        }
+      ],
+      "offlineFallback": false,
+      "startedAt": "2026-06-07T03:54:29.689Z",
+      "score": {
+        "pronunciationScore": 70,
+        "grammarScore": 40,
+        "fluencyScore": 50,
+        "vocabularyScore": 45,
+        "naturalnessScore": 40,
+        "contextAppropriatenessScore": 60,
+        "overallScore": 51
+      },
+      "endedAt": "2026-06-07T03:55:20.754Z",
+      "report": {
+        "id": "6cd645a6-40b9-49a3-8d31-f568f0b11942",
+        "sessionId": "f7c017d8-eaf7-48ce-bca1-2e72d885464a",
+        "scenarioId": "interview",
+        "scenarioName": "英文面试",
+        "durationSeconds": 51,
+        "dialogueTurns": 2,
+        "scores": {
+          "pronunciationScore": 70,
+          "grammarScore": 40,
+          "fluencyScore": 50,
+          "vocabularyScore": 45,
+          "naturalnessScore": 40,
+          "contextAppropriatenessScore": 60,
+          "overallScore": 51
+        },
+        "strengths": [
+          "发音清晰度估算表现较好，本次得分 70 分。",
+          "语境适切度表现较好，本次得分 60 分。"
+        ],
+        "weaknesses": [
+          "本次发现 1 条可改进表达，建议优先复习典型错误。",
+          "语法准确度仍有提升空间，本次得分 40 分。"
+        ],
+        "corrections": [
+          {
+            "id": "4198f8b4-66e3-4744-8ae1-67a8dda1f4a0",
+            "original": "I good at computer software engineering work",
+            "corrected": "I am good at computer software engineering",
+            "errorType": "Grammar",
+            "explanation": "The verb 'am' is missing after 'I'. Also, 'work' is unnecessary here as 'computer software engineering' is sufficient.",
+            "betterExpression": "I am proficient in computer software engineering",
+            "severity": "medium"
+          }
+        ],
+        "recommendedExpressions": [
+          "I am proficient in computer software engineering",
+          "One project I am particularly proud of is...",
+          "My main responsibility was..."
+        ],
+        "nextPracticeSuggestions": [
+          "下一次重点练习表达自然度，尝试连续回答 2-3 句话。",
+          "围绕“interview”场景复用本报告中的推荐表达。",
+          "复习语法准确度相关反馈，并在下一轮对话中主动应用。"
+        ],
+        "studyCards": [
+          {
+            "front": "I good at computer software engineering work",
+            "back": "I am good at computer software engineering\nThe verb 'am' is missing after 'I'. Also, 'work' is unnecessary here as 'computer software engineering' is sufficient."
+          },
+          {
+            "front": "场景表达",
+            "back": "I am proficient in computer software engineering"
+          },
+          {
+            "front": "场景表达",
+            "back": "One project I am particularly proud of is..."
+          }
+        ],
+        "createdAt": "2026-06-07T03:55:20.754Z"
+      }
+    },
+    "report": {
+      "id": "6cd645a6-40b9-49a3-8d31-f568f0b11942",
+      "sessionId": "f7c017d8-eaf7-48ce-bca1-2e72d885464a",
+      "scenarioId": "interview",
+      "scenarioName": "英文面试",
+      "durationSeconds": 51,
+      "dialogueTurns": 2,
+      "scores": {
+        "pronunciationScore": 70,
+        "grammarScore": 40,
+        "fluencyScore": 50,
+        "vocabularyScore": 45,
+        "naturalnessScore": 40,
+        "contextAppropriatenessScore": 60,
+        "overallScore": 51
+      },
+      "strengths": [
+        "发音清晰度估算表现较好，本次得分 70 分。",
+        "语境适切度表现较好，本次得分 60 分。"
+      ],
+      "weaknesses": [
+        "本次发现 1 条可改进表达，建议优先复习典型错误。",
+        "语法准确度仍有提升空间，本次得分 40 分。"
+      ],
+      "corrections": [
+        {
+          "id": "4198f8b4-66e3-4744-8ae1-67a8dda1f4a0",
+          "original": "I good at computer software engineering work",
+          "corrected": "I am good at computer software engineering",
+          "errorType": "Grammar",
+          "explanation": "The verb 'am' is missing after 'I'. Also, 'work' is unnecessary here as 'computer software engineering' is sufficient.",
+          "betterExpression": "I am proficient in computer software engineering",
+          "severity": "medium"
+        }
+      ],
+      "recommendedExpressions": [
+        "I am proficient in computer software engineering",
+        "One project I am particularly proud of is...",
+        "My main responsibility was..."
+      ],
+      "nextPracticeSuggestions": [
+        "下一次重点练习表达自然度，尝试连续回答 2-3 句话。",
+        "围绕“interview”场景复用本报告中的推荐表达。",
+        "复习语法准确度相关反馈，并在下一轮对话中主动应用。"
+      ],
+      "studyCards": [
+        {
+          "front": "I good at computer software engineering work",
+          "back": "I am good at computer software engineering\nThe verb 'am' is missing after 'I'. Also, 'work' is unnecessary here as 'computer software engineering' is sufficient."
+        },
+        {
+          "front": "场景表达",
+          "back": "I am proficient in computer software engineering"
+        },
+        {
+          "front": "场景表达",
+          "back": "One project I am particularly proud of is..."
+        }
+      ],
+      "createdAt": "2026-06-07T03:55:20.754Z"
+    }
+  }
+]

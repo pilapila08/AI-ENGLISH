@@ -9,6 +9,8 @@ import { useRecorder } from "./hooks/useRecorder";
 import { useTranscription } from "./hooks/useTranscription";
 import { useSpeech } from "./hooks/useSpeech";
 import type { CorrectionMode, Scenario, ScoreResult } from "./types";
+import HistoryPage from "./pages/HistoryPage";
+import PracticePage from "./pages/PracticePage";
 
 const initialScore: ScoreResult = {
   pronunciationScore: 60,
@@ -21,6 +23,7 @@ const initialScore: ScoreResult = {
 };
 
 function App() {
+  const [page, setPage] = useState<"practice" | "history">("practice");
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [selectedScenarioId, setSelectedScenarioId] = useState("");
   const [scenarioError, setScenarioError] = useState("");
@@ -198,6 +201,10 @@ function App() {
     await startRecording();
   };
 
+  if (page === "history") {
+    return <HistoryPage onBack={() => setPage("practice")} />;
+  }
+
   if (isLoadingScenarios || !selectedScenario) {
     return (
       <main className="grid min-h-screen place-items-center bg-mist p-6 text-ink">
@@ -215,6 +222,7 @@ function App() {
   }
 
   return (
+    <PracticePage onShowHistory={() => setPage("history")}>
     <main className="min-h-screen bg-mist p-5 text-ink">
       <header className="mx-auto mb-5 flex max-w-[1600px] items-center justify-between">
         <div>
@@ -300,8 +308,14 @@ function App() {
             {sessionError}
           </p>
         )}
+        {session?.storageWarning && (
+          <p className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+            {session.storageWarning}
+          </p>
+        )}
       </div>
     </main>
+    </PracticePage>
   );
 }
 

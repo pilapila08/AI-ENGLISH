@@ -6,6 +6,7 @@ import { getScenarios } from "../services/scenarioService";
 import { SessionService } from "../services/sessionService";
 import { ScoringService } from "../services/scoringService";
 import { ReportService } from "../services/reportService";
+import { storageService } from "../services/storageService";
 import { IPC_CHANNELS } from "./channels";
 
 const sessionService = new SessionService();
@@ -125,14 +126,28 @@ export function registerSessionIpc(): void {
       return null;
     }
 
-    sessionService.updateReport(
-      reportService.generate(
+    const report = reportService.generate(
         completedSession,
         completedSession.corrections,
         finalScore,
         scenario.name,
-      ),
-    );
+      );
+    sessionService.updateReport(report);
+
+    const sessionWithReport = sessionService.getCurrentSession();
+
+    if (sessionWithReport) {
+      try {
+        await storageService.saveSession(sessionWithReport, report);
+        sessionService.updateStorageWarning(undefined);
+      } catch (error) {
+        console.warn("[SessionIPC] Failed to save practice history.", error);
+        sessionService.updateStorageWarning(
+          "课后报告已生成，但历史记录保存失败。请检查本地存储权限。",
+        );
+      }
+    }
+
     return sessionService.getCurrentSession();
   });
   ipcMain.handle(IPC_CHANNELS.practiceGetCurrent, () =>

@@ -16,4 +16,7 @@ contextBridge.exposeInMainWorld("speakCoachAPI", {
     text: string,
     options?: { voice?: string; style?: string },
   ) => ipcRenderer.invoke("speech:synthesize", text, options),
+  listHistory: () => ipcRenderer.invoke("history:list"),
+  getHistoryDetail: (sessionId: string) =>
+    ipcRenderer.invoke("history:get-detail", sessionId),
 });

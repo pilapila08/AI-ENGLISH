@@ -14,8 +14,10 @@
     "electron/types.ts",
     "electron/services/scoringService.ts",
     "electron/services/reportService.ts",
+    "electron/services/storageService.ts",
     "tests/scoringService.test.ts",
     "tests/llmAnalysisServices.test.ts",
-    "tests/reportService.test.ts"
+    "tests/reportService.test.ts",
+    "tests/storageService.test.ts"
   ]
 }

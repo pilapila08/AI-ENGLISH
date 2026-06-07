@@ -72,6 +72,22 @@ export interface PracticeSession {
   offlineFallback: boolean;
   score?: ScoreResult;
   report?: PracticeReport;
+  storageWarning?: string;
   startedAt: string;
   endedAt?: string;
+}
+
+export interface HistoryRecord {
+  sessionId: string;
+  savedAt: string;
+  session: PracticeSession;
+  report: PracticeReport;
+}
+
+export interface HistorySummary {
+  sessionId: string;
+  savedAt: string;
+  scenarioName: string;
+  overallScore: number;
+  dialogueTurns: number;
 }

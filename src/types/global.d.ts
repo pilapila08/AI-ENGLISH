@@ -2,6 +2,8 @@ import type {
   CorrectionMode,
   PracticeSession,
   Scenario,
+  HistoryRecord,
+  HistorySummary,
 } from "./index";
 
 declare global {
@@ -31,6 +33,8 @@ declare global {
         mode: "mimo" | "unavailable";
         warning?: string;
       }>;
+      listHistory: () => Promise<HistorySummary[]>;
+      getHistoryDetail: (sessionId: string) => Promise<HistoryRecord | null>;
     };
   }
 }
