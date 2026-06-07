@@ -12,10 +12,13 @@ Thumbs.db
 # Logs and local runtime files
 *.log
 logs/
+data/sessions.json
+data/sessions.json.corrupted-*.json
 
 # Node.js and Electron build artifacts
 node_modules/
 dist/
 dist-electron/
+dist-tests/
 release/
 *.tsbuildinfo

@@ -23,6 +23,102 @@ npm run dev
 Vite starts the renderer development server, then Electron opens the desktop
 window.
 
+## LLM Configuration
+
+Copy `.env.example` to `.env`, then configure an OpenAI Chat Completions
+compatible API:
+
+```env
+OPENAI_API_KEY=your-api-key
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_MODEL=gpt-4o-mini
+USE_MOCK_LLM=false
+```
+
+Set `USE_MOCK_LLM=true`, or leave `OPENAI_API_KEY` empty, to run entirely with
+the offline MockLLMProvider. If a configured remote provider fails, the current
+practice session automatically falls back to the mock provider.
+
+## LLM Correction and Scoring
+
+Correction and six-dimensional scoring can use an OpenAI Chat Completions
+compatible model. Empty `ANALYSIS_*` values reuse the `OPENAI_*` configuration:
+
+```env
+USE_LLM_ANALYSIS=true
+ANALYSIS_API_KEY=
+ANALYSIS_BASE_URL=
+ANALYSIS_MODEL=
+```
+
+The LLM analyzes grammar, expression, naturalness, and contextual
+appropriateness using the scenario and recent conversation. Scoring includes
+pronunciation clarity estimate, grammar, fluency, vocabulary, naturalness, and
+context appropriateness. If analysis fails, stable heuristic correction and
+scoring are used automatically.
+
+The overall score uses fixed local weights even when dimensions are generated
+by an LLM: pronunciation 15%, grammar 20%, fluency 15%, vocabulary 15%,
+naturalness 15%, and context appropriateness 20%. Context appropriateness
+measures whether the learner answers the preceding prompt, stays in role, and
+advances the selected scenario goals.
+
+## ASR Configuration
+
+The default ASR provider is the stable offline mock. Supported values are
+`mock`, `whisper`, and `mimo`:
+
+```env
+ASR_PROVIDER=mock
+WHISPER_API_KEY=
+WHISPER_BASE_URL=https://api.openai.com/v1
+WHISPER_MODEL=whisper-1
+```
+
+To use a Whisper-compatible transcription API, set `ASR_PROVIDER=whisper`,
+provide an API key, and restart the application. If the Whisper request fails,
+the application automatically uses MockASRProvider and shows a fallback warning
+without blocking manual text input.
+
+To use Xiaomi MiMo V2.5 ASR:
+
+```env
+ASR_PROVIDER=mimo
+MIMO_ASR_API_KEY=your-mimo-api-key
+MIMO_ASR_BASE_URL=https://api.xiaomimimo.com/v1
+MIMO_ASR_MODEL=mimo-v2.5-asr
+```
+
+`MIMO_ASR_API_KEY` may be omitted when the Xiaomi key is already configured as
+`OPENAI_API_KEY`. Recorded WebM audio is converted to WAV before it is sent to
+the Main Process because MiMo V2.5 ASR accepts WAV or MP3 input.
+
+## TTS Configuration
+
+MiMo TTS is used for automatic and manual English reply playback:
+
+```env
+TTS_PROVIDER=mimo
+MIMO_TTS_API_KEY=your-mimo-api-key
+MIMO_TTS_BASE_URL=https://api.xiaomimimo.com/v1
+MIMO_TTS_MODEL=mimo-v2.5-tts
+MIMO_TTS_VOICE=Chloe
+```
+
+`MIMO_TTS_API_KEY` may be omitted to reuse `MIMO_API_KEY` or
+`OPENAI_API_KEY`. The API key stays in the Electron Main Process. Replies are
+split into sentences, synthesized in parallel, cached in memory, and played in
+order to reduce time to first audio. The application does not fall back to
+browser Web Speech.
+
+The chat panel provides neutral international, American, British, Australian,
+Irish, African American, Indian, and East Asian-influenced English options.
+It also exposes the official English preset voices: female voices `Mia` and
+`Chloe`, and male voices `Milo` and `Dean`. MiMo-V2.5-TTS does not expose a
+dedicated accent parameter, so SpeakCoach sends the selected accent as a
+natural-language speech-style instruction. Accent adherence is best-effort and
+may vary by voice and input text.
+
 ## Build
 
 ```bash

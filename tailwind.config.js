@@ -4,12 +4,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        ink: "#172033",
-        mist: "#f4f7fb",
-        brand: "#625bf6",
+        ink: "#e7ecff",
+        mist: "#050711",
+        brand: "#8b5cf6",
       },
       boxShadow: {
-        panel: "0 20px 45px -30px rgba(23, 32, 51, 0.35)",
+        panel: "0 20px 55px -32px rgba(0, 0, 0, 0.85)",
       },
     },
   },

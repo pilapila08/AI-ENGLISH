@@ -1,28 +1,4 @@
-export interface Scenario {
-  id: string;
-  name: string;
-  description: string;
-  userRole: string;
-  aiRole: string;
-  difficulty: "beginner" | "intermediate" | "advanced";
-  goals: string[];
-  openingMessage: string;
-  sampleQuestions: string[];
-}
-
 export type CorrectionMode = "immersive" | "gentle" | "strict";
-
-export type EnglishAccent =
-  | "neutral"
-  | "american"
-  | "british"
-  | "australian"
-  | "irish"
-  | "africanAmerican"
-  | "indian"
-  | "eastAsian";
-
-export type EnglishTTSVoice = "Mia" | "Chloe" | "Milo" | "Dean";
 
 export interface ChatMessage {
   id: string;
