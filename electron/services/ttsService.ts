@@ -36,7 +36,12 @@ export class TTSService {
       };
     }
 
-    const cacheKey = JSON.stringify([text.trim(), options?.voice, options?.style]);
+    const cacheKey = JSON.stringify([
+      text.trim(),
+      options?.voice,
+      options?.style,
+      options?.accent,
+    ]);
     const cached = this.cache.get(cacheKey);
     if (cached) {
       this.cache.delete(cacheKey);

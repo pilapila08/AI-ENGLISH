@@ -111,6 +111,14 @@ split into sentences, synthesized in parallel, cached in memory, and played in
 order to reduce time to first audio. The application does not fall back to
 browser Web Speech.
 
+The chat panel provides neutral international, American, British, Australian,
+Irish, African American, Indian, and East Asian-influenced English options.
+It also exposes the official English preset voices: female voices `Mia` and
+`Chloe`, and male voices `Milo` and `Dean`. MiMo-V2.5-TTS does not expose a
+dedicated accent parameter, so SpeakCoach sends the selected accent as a
+natural-language speech-style instruction. Accent adherence is best-effort and
+may vary by voice and input text.
+
 ## Build
 
 ```bash

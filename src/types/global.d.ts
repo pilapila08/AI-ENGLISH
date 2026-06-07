@@ -5,6 +5,8 @@ import type {
   HistoryRecord,
   HistorySummary,
   VoiceReplyResult,
+  EnglishAccent,
+  EnglishTTSVoice,
 } from "./index";
 
 declare global {
@@ -27,7 +29,11 @@ declare global {
       ) => Promise<string>;
       synthesizeSpeech: (
         text: string,
-        options?: { voice?: string; style?: string },
+        options?: {
+          voice?: EnglishTTSVoice;
+          style?: string;
+          accent?: EnglishAccent;
+        },
       ) => Promise<{
         audioData: Uint8Array | null;
         mimeType: "audio/wav" | null;

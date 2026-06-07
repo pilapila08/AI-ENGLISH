@@ -1,4 +1,5 @@
 import { ipcMain } from "electron";
+import type { TTSOptions } from "../providers/ttsProvider";
 import { TTSService } from "../services/ttsService";
 import { IPC_CHANNELS } from "./channels";
 
@@ -8,7 +9,7 @@ const MAX_TEXT_LENGTH = 4_000;
 export function registerTTSIpc(): void {
   ipcMain.handle(
     IPC_CHANNELS.speechSynthesize,
-    async (_event, text: string, options?: { voice?: string; style?: string }) => {
+    async (_event, text: string, options?: TTSOptions) => {
       try {
         if (typeof text !== "string" || !text.trim()) {
           throw new Error("Speech synthesis text is empty.");

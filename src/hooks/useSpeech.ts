@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { EnglishAccent, EnglishTTSVoice } from "../types";
 
 interface SpeechOptions {
-  voice?: string;
+  voice?: EnglishTTSVoice;
   style?: string;
+  accent?: EnglishAccent;
 }
 
 interface UseSpeechResult {

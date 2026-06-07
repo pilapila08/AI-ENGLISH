@@ -12,6 +12,18 @@ export interface Scenario {
 
 export type CorrectionMode = "immersive" | "gentle" | "strict";
 
+export type EnglishAccent =
+  | "neutral"
+  | "american"
+  | "british"
+  | "australian"
+  | "irish"
+  | "africanAmerican"
+  | "indian"
+  | "eastAsian";
+
+export type EnglishTTSVoice = "Mia" | "Chloe" | "Milo" | "Dean";
+
 export interface ChatMessage {
   id: string;
   role: "user" | "assistant";

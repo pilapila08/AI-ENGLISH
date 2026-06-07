@@ -14,7 +14,19 @@ contextBridge.exposeInMainWorld("speakCoachAPI", {
   ) => ipcRenderer.invoke("speech:transcribe", arrayBuffer, meta),
   synthesizeSpeech: (
     text: string,
-    options?: { voice?: string; style?: string },
+    options?: {
+      voice?: string;
+      style?: string;
+      accent?:
+        | "neutral"
+        | "american"
+        | "british"
+        | "australian"
+        | "irish"
+        | "africanAmerican"
+        | "indian"
+        | "eastAsian";
+    },
   ) => ipcRenderer.invoke("speech:synthesize", text, options),
   listHistory: () => ipcRenderer.invoke("history:list"),
   getHistoryDetail: (sessionId: string) =>

@@ -886,5 +886,404 @@
       ],
       "createdAt": "2026-06-07T06:03:45.037Z"
     }
+  },
+  {
+    "sessionId": "0b53e603-7973-4b32-9f5a-d089848a9e17",
+    "savedAt": "2026-06-07T06:19:02.995Z",
+    "session": {
+      "id": "0b53e603-7973-4b32-9f5a-d089848a9e17",
+      "scenarioId": "interview",
+      "correctionMode": "gentle",
+      "status": "completed",
+      "messages": [
+        {
+          "id": "2ca2fe90-11de-4f9a-89cb-36c18a6ddeae",
+          "role": "assistant",
+          "content": "Hello! Thanks for joining us today. Could you start by telling me a little about yourself?",
+          "createdAt": "2026-06-07T06:18:47.155Z"
+        }
+      ],
+      "corrections": [],
+      "offlineFallback": false,
+      "startedAt": "2026-06-07T06:18:47.155Z",
+      "score": {
+        "pronunciationScore": 0,
+        "grammarScore": 0,
+        "fluencyScore": 0,
+        "vocabularyScore": 0,
+        "naturalnessScore": 0,
+        "contextAppropriatenessScore": 0,
+        "overallScore": 0
+      },
+      "endedAt": "2026-06-07T06:19:02.993Z",
+      "report": {
+        "id": "628129d6-4ddc-4ac6-bdbd-bf2f81d33211",
+        "sessionId": "0b53e603-7973-4b32-9f5a-d089848a9e17",
+        "scenarioId": "interview",
+        "scenarioName": "英文面试",
+        "durationSeconds": 16,
+        "dialogueTurns": 0,
+        "scores": {
+          "pronunciationScore": 0,
+          "grammarScore": 0,
+          "fluencyScore": 0,
+          "vocabularyScore": 0,
+          "naturalnessScore": 0,
+          "contextAppropriatenessScore": 0,
+          "overallScore": 0
+        },
+        "strengths": [
+          "已完成场景选择并熟悉练习流程。",
+          "已建立本次练习记录，可继续完成更多对话轮次。"
+        ],
+        "weaknesses": [
+          "本次尚未完成有效回答，暂时无法充分评估口语表现。",
+          "需要增加回答长度和对话轮数，以获得更准确的反馈。"
+        ],
+        "corrections": [],
+        "recommendedExpressions": [
+          "One project I am particularly proud of is...",
+          "My main responsibility was...",
+          "The result was measurable because..."
+        ],
+        "nextPracticeSuggestions": [
+          "下一次重点练习语境适切度，尝试连续回答 2-3 句话。",
+          "围绕“interview”场景复用本报告中的推荐表达。",
+          "复习表达自然度相关反馈，并在下一轮对话中主动应用。"
+        ],
+        "studyCards": [
+          {
+            "front": "场景表达",
+            "back": "One project I am particularly proud of is..."
+          },
+          {
+            "front": "场景表达",
+            "back": "My main responsibility was..."
+          },
+          {
+            "front": "场景表达",
+            "back": "The result was measurable because..."
+          }
+        ],
+        "createdAt": "2026-06-07T06:19:02.993Z"
+      }
+    },
+    "report": {
+      "id": "628129d6-4ddc-4ac6-bdbd-bf2f81d33211",
+      "sessionId": "0b53e603-7973-4b32-9f5a-d089848a9e17",
+      "scenarioId": "interview",
+      "scenarioName": "英文面试",
+      "durationSeconds": 16,
+      "dialogueTurns": 0,
+      "scores": {
+        "pronunciationScore": 0,
+        "grammarScore": 0,
+        "fluencyScore": 0,
+        "vocabularyScore": 0,
+        "naturalnessScore": 0,
+        "contextAppropriatenessScore": 0,
+        "overallScore": 0
+      },
+      "strengths": [
+        "已完成场景选择并熟悉练习流程。",
+        "已建立本次练习记录，可继续完成更多对话轮次。"
+      ],
+      "weaknesses": [
+        "本次尚未完成有效回答，暂时无法充分评估口语表现。",
+        "需要增加回答长度和对话轮数，以获得更准确的反馈。"
+      ],
+      "corrections": [],
+      "recommendedExpressions": [
+        "One project I am particularly proud of is...",
+        "My main responsibility was...",
+        "The result was measurable because..."
+      ],
+      "nextPracticeSuggestions": [
+        "下一次重点练习语境适切度，尝试连续回答 2-3 句话。",
+        "围绕“interview”场景复用本报告中的推荐表达。",
+        "复习表达自然度相关反馈，并在下一轮对话中主动应用。"
+      ],
+      "studyCards": [
+        {
+          "front": "场景表达",
+          "back": "One project I am particularly proud of is..."
+        },
+        {
+          "front": "场景表达",
+          "back": "My main responsibility was..."
+        },
+        {
+          "front": "场景表达",
+          "back": "The result was measurable because..."
+        }
+      ],
+      "createdAt": "2026-06-07T06:19:02.993Z"
+    }
+  },
+  {
+    "sessionId": "07560ff5-da3d-43d1-a345-14759f6804d8",
+    "savedAt": "2026-06-07T06:19:27.879Z",
+    "session": {
+      "id": "07560ff5-da3d-43d1-a345-14759f6804d8",
+      "scenarioId": "interview",
+      "correctionMode": "gentle",
+      "status": "completed",
+      "messages": [
+        {
+          "id": "b74b30c8-c30c-4187-a7c6-247af7d03f7e",
+          "role": "assistant",
+          "content": "Hello! Thanks for joining us today. Could you start by telling me a little about yourself?",
+          "createdAt": "2026-06-07T06:19:16.166Z"
+        }
+      ],
+      "corrections": [],
+      "offlineFallback": false,
+      "startedAt": "2026-06-07T06:19:16.166Z",
+      "score": {
+        "pronunciationScore": 50,
+        "grammarScore": 50,
+        "fluencyScore": 0,
+        "vocabularyScore": 0,
+        "naturalnessScore": 50,
+        "contextAppropriatenessScore": 0,
+        "overallScore": 25
+      },
+      "endedAt": "2026-06-07T06:19:27.878Z",
+      "report": {
+        "id": "70e4be57-3a1d-47fc-9894-14802a92ad60",
+        "sessionId": "07560ff5-da3d-43d1-a345-14759f6804d8",
+        "scenarioId": "interview",
+        "scenarioName": "英文面试",
+        "durationSeconds": 12,
+        "dialogueTurns": 0,
+        "scores": {
+          "pronunciationScore": 50,
+          "grammarScore": 50,
+          "fluencyScore": 0,
+          "vocabularyScore": 0,
+          "naturalnessScore": 50,
+          "contextAppropriatenessScore": 0,
+          "overallScore": 25
+        },
+        "strengths": [
+          "已完成场景选择并熟悉练习流程。",
+          "已建立本次练习记录，可继续完成更多对话轮次。"
+        ],
+        "weaknesses": [
+          "本次尚未完成有效回答，暂时无法充分评估口语表现。",
+          "需要增加回答长度和对话轮数，以获得更准确的反馈。"
+        ],
+        "corrections": [],
+        "recommendedExpressions": [
+          "One project I am particularly proud of is...",
+          "My main responsibility was...",
+          "The result was measurable because..."
+        ],
+        "nextPracticeSuggestions": [
+          "下一次重点练习语境适切度，尝试连续回答 2-3 句话。",
+          "围绕“interview”场景复用本报告中的推荐表达。",
+          "复习词汇丰富度相关反馈，并在下一轮对话中主动应用。"
+        ],
+        "studyCards": [
+          {
+            "front": "场景表达",
+            "back": "One project I am particularly proud of is..."
+          },
+          {
+            "front": "场景表达",
+            "back": "My main responsibility was..."
+          },
+          {
+            "front": "场景表达",
+            "back": "The result was measurable because..."
+          }
+        ],
+        "createdAt": "2026-06-07T06:19:27.878Z"
+      }
+    },
+    "report": {
+      "id": "70e4be57-3a1d-47fc-9894-14802a92ad60",
+      "sessionId": "07560ff5-da3d-43d1-a345-14759f6804d8",
+      "scenarioId": "interview",
+      "scenarioName": "英文面试",
+      "durationSeconds": 12,
+      "dialogueTurns": 0,
+      "scores": {
+        "pronunciationScore": 50,
+        "grammarScore": 50,
+        "fluencyScore": 0,
+        "vocabularyScore": 0,
+        "naturalnessScore": 50,
+        "contextAppropriatenessScore": 0,
+        "overallScore": 25
+      },
+      "strengths": [
+        "已完成场景选择并熟悉练习流程。",
+        "已建立本次练习记录，可继续完成更多对话轮次。"
+      ],
+      "weaknesses": [
+        "本次尚未完成有效回答，暂时无法充分评估口语表现。",
+        "需要增加回答长度和对话轮数，以获得更准确的反馈。"
+      ],
+      "corrections": [],
+      "recommendedExpressions": [
+        "One project I am particularly proud of is...",
+        "My main responsibility was...",
+        "The result was measurable because..."
+      ],
+      "nextPracticeSuggestions": [
+        "下一次重点练习语境适切度，尝试连续回答 2-3 句话。",
+        "围绕“interview”场景复用本报告中的推荐表达。",
+        "复习词汇丰富度相关反馈，并在下一轮对话中主动应用。"
+      ],
+      "studyCards": [
+        {
+          "front": "场景表达",
+          "back": "One project I am particularly proud of is..."
+        },
+        {
+          "front": "场景表达",
+          "back": "My main responsibility was..."
+        },
+        {
+          "front": "场景表达",
+          "back": "The result was measurable because..."
+        }
+      ],
+      "createdAt": "2026-06-07T06:19:27.878Z"
+    }
+  },
+  {
+    "sessionId": "a67e3ec7-6676-493f-9ae8-89b12485bbed",
+    "savedAt": "2026-06-07T06:24:05.288Z",
+    "session": {
+      "id": "a67e3ec7-6676-493f-9ae8-89b12485bbed",
+      "scenarioId": "interview",
+      "correctionMode": "gentle",
+      "status": "completed",
+      "messages": [
+        {
+          "id": "88f3bb65-4ff0-4ced-9596-8fda45fb69dd",
+          "role": "assistant",
+          "content": "Hello! Thanks for joining us today. Could you start by telling me a little about yourself?",
+          "createdAt": "2026-06-07T06:23:49.990Z"
+        }
+      ],
+      "corrections": [],
+      "offlineFallback": false,
+      "startedAt": "2026-06-07T06:23:49.990Z",
+      "score": {
+        "pronunciationScore": 50,
+        "grammarScore": 50,
+        "fluencyScore": 50,
+        "vocabularyScore": 50,
+        "naturalnessScore": 50,
+        "contextAppropriatenessScore": 50,
+        "overallScore": 50
+      },
+      "endedAt": "2026-06-07T06:24:05.285Z",
+      "report": {
+        "id": "db60f117-823d-4dd0-9981-3b11edf07912",
+        "sessionId": "a67e3ec7-6676-493f-9ae8-89b12485bbed",
+        "scenarioId": "interview",
+        "scenarioName": "英文面试",
+        "durationSeconds": 15,
+        "dialogueTurns": 0,
+        "scores": {
+          "pronunciationScore": 50,
+          "grammarScore": 50,
+          "fluencyScore": 50,
+          "vocabularyScore": 50,
+          "naturalnessScore": 50,
+          "contextAppropriatenessScore": 50,
+          "overallScore": 50
+        },
+        "strengths": [
+          "已完成场景选择并熟悉练习流程。",
+          "已建立本次练习记录，可继续完成更多对话轮次。"
+        ],
+        "weaknesses": [
+          "本次尚未完成有效回答，暂时无法充分评估口语表现。",
+          "需要增加回答长度和对话轮数，以获得更准确的反馈。"
+        ],
+        "corrections": [],
+        "recommendedExpressions": [
+          "One project I am particularly proud of is...",
+          "My main responsibility was...",
+          "The result was measurable because..."
+        ],
+        "nextPracticeSuggestions": [
+          "下一次重点练习语境适切度，尝试连续回答 2-3 句话。",
+          "围绕“interview”场景复用本报告中的推荐表达。",
+          "复习表达自然度相关反馈，并在下一轮对话中主动应用。"
+        ],
+        "studyCards": [
+          {
+            "front": "场景表达",
+            "back": "One project I am particularly proud of is..."
+          },
+          {
+            "front": "场景表达",
+            "back": "My main responsibility was..."
+          },
+          {
+            "front": "场景表达",
+            "back": "The result was measurable because..."
+          }
+        ],
+        "createdAt": "2026-06-07T06:24:05.285Z"
+      }
+    },
+    "report": {
+      "id": "db60f117-823d-4dd0-9981-3b11edf07912",
+      "sessionId": "a67e3ec7-6676-493f-9ae8-89b12485bbed",
+      "scenarioId": "interview",
+      "scenarioName": "英文面试",
+      "durationSeconds": 15,
+      "dialogueTurns": 0,
+      "scores": {
+        "pronunciationScore": 50,
+        "grammarScore": 50,
+        "fluencyScore": 50,
+        "vocabularyScore": 50,
+        "naturalnessScore": 50,
+        "contextAppropriatenessScore": 50,
+        "overallScore": 50
+      },
+      "strengths": [
+        "已完成场景选择并熟悉练习流程。",
+        "已建立本次练习记录，可继续完成更多对话轮次。"
+      ],
+      "weaknesses": [
+        "本次尚未完成有效回答，暂时无法充分评估口语表现。",
+        "需要增加回答长度和对话轮数，以获得更准确的反馈。"
+      ],
+      "corrections": [],
+      "recommendedExpressions": [
+        "One project I am particularly proud of is...",
+        "My main responsibility was...",
+        "The result was measurable because..."
+      ],
+      "nextPracticeSuggestions": [
+        "下一次重点练习语境适切度，尝试连续回答 2-3 句话。",
+        "围绕“interview”场景复用本报告中的推荐表达。",
+        "复习表达自然度相关反馈，并在下一轮对话中主动应用。"
+      ],
+      "studyCards": [
+        {
+          "front": "场景表达",
+          "back": "One project I am particularly proud of is..."
+        },
+        {
+          "front": "场景表达",
+          "back": "My main responsibility was..."
+        },
+        {
+          "front": "场景表达",
+          "back": "The result was measurable because..."
+        }
+      ],
+      "createdAt": "2026-06-07T06:24:05.285Z"
+    }
   }
 ]

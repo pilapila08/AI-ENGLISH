@@ -25,6 +25,27 @@ function getChatCompletionsUrl(baseUrl: string): string {
     : `${normalizedBaseUrl}/chat/completions`;
 }
 
+const accentInstructions: NonNullable<
+  Record<NonNullable<TTSOptions["accent"]>, string>
+> = {
+  neutral:
+    "Speak in clear, neutral international English suitable for an English learner.",
+  american:
+    "Speak in clear, natural General American English, with learner-friendly pacing.",
+  british:
+    "Speak in clear, natural standard British English, with learner-friendly pacing.",
+  australian:
+    "Speak in clear, natural Australian English, with learner-friendly pacing.",
+  irish:
+    "Speak in clear, natural Irish English, with learner-friendly pacing.",
+  africanAmerican:
+    "Speak in natural African American English, clearly and respectfully, with learner-friendly pacing. Avoid caricature or exaggerated stereotypes.",
+  indian:
+    "Speak in clear, natural Indian English, with learner-friendly pacing. Avoid exaggerated stereotypes.",
+  eastAsian:
+    "Speak English with a subtle East Asian-influenced accent, clearly and respectfully, with learner-friendly pacing. Avoid caricature or exaggerated stereotypes.",
+};
+
 export class XiaomiMimoTTSProvider implements TTSProvider {
   constructor(private readonly config: XiaomiMimoTTSConfig) {}
 
@@ -35,9 +56,16 @@ export class XiaomiMimoTTSProvider implements TTSProvider {
       throw new Error("MiMo TTS received empty text.");
     }
 
-    const styledContent = options?.style
-      ? `<style>${options.style}</style>${content}`
-      : content;
+    const instructions = [
+      options?.accent ? accentInstructions[options.accent] : "",
+      options?.style?.trim() || "",
+    ].filter(Boolean);
+    const messages = [
+      ...(instructions.length > 0
+        ? [{ role: "user", content: instructions.join(" ") }]
+        : []),
+      { role: "assistant", content },
+    ];
     let response: Response;
 
     try {
@@ -49,7 +77,7 @@ export class XiaomiMimoTTSProvider implements TTSProvider {
         },
         body: JSON.stringify({
           model: this.config.model,
-          messages: [{ role: "assistant", content: styledContent }],
+          messages,
           audio: {
             format: "wav",
             voice: options?.voice || this.config.voice,

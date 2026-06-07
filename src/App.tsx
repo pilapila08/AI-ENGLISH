@@ -10,7 +10,13 @@ import { useSpeech } from "./hooks/useSpeech";
 import { useVoiceConversation } from "./hooks/useVoiceConversation";
 import HistoryPage from "./pages/HistoryPage";
 import PracticePage from "./pages/PracticePage";
-import type { CorrectionMode, Scenario, ScoreResult } from "./types";
+import type {
+  CorrectionMode,
+  EnglishAccent,
+  EnglishTTSVoice,
+  Scenario,
+  ScoreResult,
+} from "./types";
 
 const initialScore: ScoreResult = {
   pronunciationScore: 60,
@@ -31,6 +37,8 @@ function App() {
   const [correctionMode, setCorrectionMode] = useState<CorrectionMode>("gentle");
   const [inputText, setInputText] = useState("");
   const [autoSpeak, setAutoSpeak] = useState(true);
+  const [speechAccent, setSpeechAccent] = useState<EnglishAccent>("neutral");
+  const [speechVoice, setSpeechVoice] = useState<EnglishTTSVoice>("Chloe");
   const [showReport, setShowReport] = useState(false);
   const lastSpokenMessageIdRef = useRef("");
   const { session, isBusy, error: sessionError, startPractice, sendMessage, endPractice, refreshSession } = usePracticeSession();
@@ -70,15 +78,15 @@ function App() {
   useEffect(() => {
     if (!selectedScenario?.openingMessage) return;
     const chunks = selectedScenario.openingMessage.match(/[^.!?]+[.!?]+|[^.!?]+$/g)?.map((part) => part.trim()).filter(Boolean) ?? [];
-    void Promise.all(chunks.map((chunk) => window.speakCoachAPI.synthesizeSpeech(chunk).catch((error) => console.warn("[TTS] Prewarm failed:", error))));
-  }, [selectedScenario?.id, selectedScenario?.openingMessage]);
+    void Promise.all(chunks.map((chunk) => window.speakCoachAPI.synthesizeSpeech(chunk, { accent: speechAccent, voice: speechVoice }).catch((error) => console.warn("[TTS] Prewarm failed:", error))));
+  }, [selectedScenario?.id, selectedScenario?.openingMessage, speechAccent, speechVoice]);
 
   useEffect(() => {
     const lastMessage = messages.at(-1);
     if (!autoSpeak || !lastMessage || lastMessage.role !== "assistant" || lastSpokenMessageIdRef.current === lastMessage.id) return;
     lastSpokenMessageIdRef.current = lastMessage.id;
-    void speak(lastMessage.content);
-  }, [autoSpeak, messages, speak]);
+    void speak(lastMessage.content, { accent: speechAccent, voice: speechVoice });
+  }, [autoSpeak, messages, speak, speechAccent, speechVoice]);
 
   useEffect(() => {
     if (session?.report) setShowReport(true);
@@ -139,7 +147,7 @@ function App() {
             <>
               <section className="app-content-enter grid min-h-0 flex-1 gap-3 lg:grid-cols-[230px_minmax(420px,1fr)_280px] xl:grid-cols-[250px_minmax(500px,1fr)_300px]">
                 <ScenarioPanel correctionMode={correctionMode} disabled={isSessionActive} onCorrectionModeChange={setCorrectionMode} onScenarioChange={setSelectedScenarioId} scenarios={scenarios} selectedScenarioId={selectedScenarioId} />
-                <ChatPanel autoSpeak={autoSpeak} isBusy={isBusy} messages={messages} onAutoSpeakChange={setAutoSpeak} onSpeakMessage={speak} onStopSpeaking={stopSpeaking} scenario={selectedScenario} speaking={speaking} speechError={speechError} speechMode={speechMode} speechSupported={speechSupported} speechWarning={speechWarning} />
+                <ChatPanel accent={speechAccent} autoSpeak={autoSpeak} isBusy={isBusy} messages={messages} onAccentChange={setSpeechAccent} onAutoSpeakChange={setAutoSpeak} onSpeakMessage={(text) => void speak(text, { accent: speechAccent, voice: speechVoice })} onStopSpeaking={stopSpeaking} onVoiceChange={setSpeechVoice} scenario={selectedScenario} speaking={speaking} speechError={speechError} speechMode={speechMode} speechSupported={speechSupported} speechWarning={speechWarning} voice={speechVoice} />
                 <FeedbackPanel correctionMode={session?.correctionMode ?? correctionMode} corrections={session?.corrections ?? []} isAnalyzing={isBusy} score={session?.score ?? initialScore} />
               </section>
               <RecorderBar

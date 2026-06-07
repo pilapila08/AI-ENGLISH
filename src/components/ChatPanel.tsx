@@ -1,5 +1,38 @@
 import { useEffect, useRef } from "react";
-import type { ChatMessage, Scenario } from "../types";
+import type {
+  ChatMessage,
+  EnglishAccent,
+  EnglishTTSVoice,
+  Scenario,
+} from "../types";
+import SpeechOptionPicker from "./SpeechOptionPicker";
+
+const accentOptions: Array<{
+  value: EnglishAccent;
+  label: string;
+  description: string;
+}> = [
+  { value: "neutral", label: "中性国际英语", description: "清晰、自然，适合通用口语练习" },
+  { value: "american", label: "美式英语", description: "自然的通用美式发音风格" },
+  { value: "british", label: "英式英语", description: "清晰的标准英式发音风格" },
+  { value: "australian", label: "澳式英语", description: "自然的澳大利亚英语风格" },
+  { value: "irish", label: "爱尔兰英语", description: "自然的爱尔兰英语风格" },
+  { value: "africanAmerican", label: "非裔美国英语", description: "自然、尊重的非裔美国英语风格" },
+  { value: "indian", label: "印度英语", description: "清晰自然的印度英语风格" },
+  { value: "eastAsian", label: "东亚英语风格", description: "轻微东亚影响的清晰英语风格" },
+];
+
+const voiceOptions: Array<{
+  value: EnglishTTSVoice;
+  label: string;
+  description: string;
+  badge: string;
+}> = [
+  { value: "Chloe", label: "Chloe", description: "明亮清晰，适合日常陪练", badge: "女声" },
+  { value: "Mia", label: "Mia", description: "自然柔和，适合沉浸对话", badge: "女声" },
+  { value: "Milo", label: "Milo", description: "年轻自然，适合轻松交流", badge: "男声" },
+  { value: "Dean", label: "Dean", description: "沉稳清晰，适合商务场景", badge: "男声" },
+];
 
 interface ChatPanelProps {
   scenario: Scenario;
@@ -11,6 +44,10 @@ interface ChatPanelProps {
   speechError: string;
   speechWarning: string;
   speechMode: "mimo" | "unavailable";
+  accent: EnglishAccent;
+  voice: EnglishTTSVoice;
+  onAccentChange: (accent: EnglishAccent) => void;
+  onVoiceChange: (voice: EnglishTTSVoice) => void;
   onAutoSpeakChange: (enabled: boolean) => void;
   onSpeakMessage: (text: string) => void;
   onStopSpeaking: () => void;
@@ -61,6 +98,25 @@ export default function ChatPanel(props: ChatPanelProps) {
           )}
         </div>
       </header>
+
+      <div className="grid gap-2 border-b border-violet-100 bg-gradient-to-r from-violet-50/90 via-white to-cyan-50/80 px-4 py-2.5 sm:grid-cols-2">
+        <SpeechOptionPicker
+          accent="violet"
+          icon="ACC"
+          label="口音训练"
+          onChange={props.onAccentChange}
+          options={accentOptions}
+          value={props.accent}
+        />
+        <SpeechOptionPicker
+          accent="cyan"
+          icon="VOX"
+          label="AI 音色"
+          onChange={props.onVoiceChange}
+          options={voiceOptions}
+          value={props.voice}
+        />
+      </div>
 
       {(props.speechError || props.speechWarning) && (
         <p className="mx-4 mt-2 rounded-lg bg-amber-50 px-3 py-1.5 text-[11px] text-amber-700">
