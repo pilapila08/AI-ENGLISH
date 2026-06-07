@@ -1,6 +1,5 @@
-import { contextBridge } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 
-contextBridge.exposeInMainWorld("speakCoach", {
-  platform: process.platform,
-  appName: "SpeakCoach AI Desktop",
+contextBridge.exposeInMainWorld("speakCoachAPI", {
+  getScenarios: () => ipcRenderer.invoke("get-scenarios"),
 });
